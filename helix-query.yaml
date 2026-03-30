@@ -7,7 +7,7 @@ indices:
       title:
         select: head > title
         value: |
-          attribute(el, "content")
+          textContent(el)
       description:
         select: head > meta[name="description"]
         value: |
