@@ -1,0 +1,27 @@
+{
+  // Disable the built-in formatter for JS and CSS so it doesn't conflict with linters
+  "[javascript]": {
+    "editor.defaultFormatter": null,
+    "editor.formatOnSave": false
+  },
+  "[css]": {
+    "editor.defaultFormatter": null,
+    "editor.formatOnSave": false
+  },
+
+  // Auto-fix on save using ESLint (JS) and Stylelint (CSS)
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit"
+  },
+
+  // Single quotes for JS auto-imports and completions
+  "javascript.preferences.quoteStyle": "single",
+
+  // Tell ESLint and Stylelint which file types to validate
+  "eslint.validate": ["javascript"],
+  "stylelint.validate": ["css"],
+
+  // Use flat config (eslint.config.js) — required for ESLint v9+
+  "eslint.useFlatConfig": true
+}

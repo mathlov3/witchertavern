@@ -13,7 +13,11 @@
 
 import { createPicture } from '../../scripts/utils/picture.js';
 
-const STEP_BREAK = [{ media: '(min-width: 600px)', width: '600' }, { width: '750' }];
+const STEP_BREAK = [
+  { media: '(min-width: 900px)', width: '960' },
+  { media: '(min-width: 600px)', width: '750' },
+  { width: '750' },
+];
 
 export default function decorate(block) {
   const rows = [...block.children];

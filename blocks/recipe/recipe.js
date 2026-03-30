@@ -20,7 +20,12 @@ import { getMetadata } from '../../scripts/ak.js';
 import getPlaceholders from '../../scripts/utils/placeholders.js';
 import { createPicture } from '../../scripts/utils/picture.js';
 
-const INTRO_BREAK = [{ media: '(min-width: 600px)', width: '600' }, { width: '750' }];
+const INTRO_BREAK = [
+  { media: '(min-width: 1200px)', width: '700' },
+  { media: '(min-width: 900px)', width: '600' },
+  { media: '(min-width: 600px)', width: '500' },
+  { width: '750' },
+];
 
 const STATS = [
   { key: 'cook-time', type: 'time' },
