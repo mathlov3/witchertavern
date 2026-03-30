@@ -70,7 +70,7 @@ async function fetchRecord(path) {
 
   const ogImage = extractMeta(html, 'og:image');
   if (ogImage) {
-    try { record.image = new URL(ogImage).pathname; } catch { record.image = ogImage; }
+    try { record.image = new URL(AEM_ORIGIN + ogImage).toString() } catch { record.image = ogImage; }
   }
 
   return record;
