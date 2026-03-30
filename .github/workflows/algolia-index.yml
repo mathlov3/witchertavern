@@ -1,0 +1,27 @@
+name: Algolia Index
+
+on:
+  repository_dispatch:
+    types: [resource-published, resource-unpublished]
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install algoliasearch
+        run: npm install algoliasearch@4
+
+      - name: Run indexing script
+        env:
+          ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
+          ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
+          PAGE_PATH: ${{ github.event.client_payload.path }}
+          EVENT_TYPE: ${{ github.event.action }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: node scripts/algolia-index.js
