@@ -70,7 +70,10 @@ async function fetchRecord(path) {
 
   const ogImage = extractMeta(html, 'og:image');
   if (ogImage) {
-    try { record.image = new URL(AEM_ORIGIN + ogImage).toString() } catch { record.image = ogImage; }
+    // Decode HTML entities (&amp; → &) that browsers handle automatically
+    const decoded = ogImage.replace(/&amp;/g, '&');
+    // og:image is usually a full URL; prepend origin only if it's a path
+    record.image = decoded.startsWith('http') ? decoded : `${AEM_ORIGIN}${decoded}`;
   }
 
   return record;
