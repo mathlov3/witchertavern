@@ -8,6 +8,8 @@
  * Authoring: add a single-cell block containing a bullet list.
  *
  *   | recipe-ingredients |
+ *   |title(optional) |
+ *   |-----------------------|
  *   | - 400г лісових грибів |
  *   | - 150г сала            |
  *   | - 1 цибулина           |
@@ -54,6 +56,19 @@ function saveChecked(checked) {
 }
 
 export default async function decorate(block) {
+  const rows = [...block.children];
+
+  // Row 1 is a title row when it has no <li> elements and there is more than one row.
+  // The heading element (h2, h3, etc.) is reused as-is from the authored content.
+  let titleEl = null;
+  if (rows.length > 1 && !rows[0].querySelector("li")) {
+    const candidate = rows[0].querySelector(":is(h1, h2, h3, h4, h5, h6, p)");
+    if (candidate?.textContent.trim()) {
+      titleEl = candidate;
+      titleEl.classList.add("ingredient-title");
+    }
+  }
+
   const items = [...block.querySelectorAll('li')];
   if (!items.length) return;
 
@@ -114,5 +129,10 @@ export default async function decorate(block) {
   });
 
   /* ── Assemble ─────────────────────────────────────────── */
-  block.replaceChildren(list, resetBtn);
+  const children = [];
+
+  if (titleEl) children.push(titleEl);
+
+  children.push(list, resetBtn);
+  block.replaceChildren(...children);
 }

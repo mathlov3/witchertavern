@@ -1,6 +1,18 @@
 .recipe-ingredients {
-  margin-block: var(--spacing-xxl);
+  margin-block: var(--spacing-l);
   max-width: 560px;
+
+  @media (width >= 900px) {
+    margin-block: var(--spacing-xxl);
+  }
+}
+
+/* ── Optional title ──────────────────────────────────────── */
+
+.ingredient-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  margin: 0 0 var(--spacing-l);
 }
 
 /* ── List ────────────────────────────────────────────────── */
@@ -12,11 +24,14 @@
 }
 
 .ingredient-item {
-  border-bottom: 1px solid var(--color-border-subtle);
   transition: background-color 0.2s ease;
 
-  &:first-child {
-    border-top: 1px solid var(--color-border-subtle);
+  @media (width >= 600px) {
+    border-bottom: 1px solid var(--color-border-subtle);
+
+    &:first-child {
+      border-top: 1px solid var(--color-border-subtle);
+    }
   }
 
   label {

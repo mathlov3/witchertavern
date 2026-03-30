@@ -11,7 +11,11 @@
   counter-reset: step;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xxl);
+  gap: var(--spacing-m);
+
+  @media (width >= 900px) {
+    gap: var(--spacing-xxl);
+  }
 }
 
 /* ── Individual step ───────────────────────────────────── */
@@ -33,13 +37,17 @@
   }
 
   @media (width >= 900px) {
+    & + .recipe-step {
+      padding-top: var(--spacing-xxl);
+    }
+
     &:not(.step-no-image) {
       grid-template-columns: 1fr 480px;
     }
 
     /* Alternate image left/right for visual rhythm */
     &:nth-child(even):not(.step-no-image) {
-      grid-template-columns: 428px 1fr;
+      grid-template-columns: 480px 1fr;
 
       .step-content {
         order: 2;
@@ -53,7 +61,7 @@
 
   /* Divider between steps (except the last) */
   & + .recipe-step {
-    padding-top: var(--spacing-xxl);
+    padding-top: var(--spacing-3xl);
     border-top: 1px solid var(--color-border);
     position: relative;
 
@@ -75,15 +83,18 @@
 /* ── Step content ──────────────────────────────────────── */
 .step-content {
   position: relative;
-  padding-left: calc(var(--spacing-xxl) + var(--spacing-m));
   color: var(--color-text);
+
+  @media (width >= 900px) {
+      padding-left: calc(var(--spacing-xxl) + var(--spacing-m));
+  }
 
   /* Large decorative step number */
   &::before {
     content: counter(step);
     position: absolute;
     left: 0;
-    top: -4px;
+    top: calc(-1 * var(--spacing-3xl));
     font-family: var(--font-heading);
     font-size: 52px;
     font-weight: 700;
@@ -92,6 +103,10 @@
     opacity: 0.25;
     pointer-events: none;
     user-select: none;
+
+    @media (width >= 900px) {
+      top: -4px;
+    }
   }
 
   h2, h3, h4 {
