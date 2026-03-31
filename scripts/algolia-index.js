@@ -91,7 +91,7 @@ async function run() {
 
   const record = await fetchRecord(path);
 
-  if (record.template !== 'recipie') {
+  if (record.template !== 'recipe') {
     console.log(`Skipping non-recipe page: ${path} (template: ${record.template ?? 'none'})`);
     return;
   }
