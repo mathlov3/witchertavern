@@ -7,7 +7,7 @@
  * Environment variables (set by the GitHub Action):
  *   ALGOLIA_APP_ID    — Algolia application ID
  *   ALGOLIA_ADMIN_KEY — Algolia admin API key (kept in GitHub secrets)
- *   PAGE_PATH         — e.g. /recipies/crown-of-pork-ribs.md (DA.live includes .md)
+ *   PAGE_PATH         — e.g. /recipes/crown-of-pork-ribs.md (DA.live includes .md)
  *   EVENT_TYPE        — resource-published | resource-unpublished
  *   GITHUB_REF_NAME   — branch name, used to pick dev vs prod index
  */
@@ -19,15 +19,12 @@ const {
   ALGOLIA_ADMIN_KEY,
   PAGE_PATH,
   EVENT_TYPE,
-  GITHUB_REF_NAME,
+  AEM_ORIGIN,
+  PROD_ORIGIN,
+  ALGOLIA_PROD_INDEX_NAME
 } = process.env;
 
-const IS_PROD = GITHUB_REF_NAME === 'main';
-const INDEX_NAME = IS_PROD
-  ? 'witchertavern_recipes_prod'
-  : 'witchertavern_recipes_dev';
-
-const AEM_ORIGIN = 'https://main--witchertavern--mathlov3.aem.live';
+const INDEX_NAME = ALGOLIA_PROD_INDEX_NAME;
 
 const META_FIELDS = [
   'title',

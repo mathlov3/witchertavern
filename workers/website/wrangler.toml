@@ -3,7 +3,12 @@ main = "index.js"
 compatibility_date = "2025-02-14"
 keep_vars = true
 
-vars = { AEM_ORG = "aemsites", AEM_SITE = "author-kit" }
+vars = { AEM_ORG = "mathlov3", AEM_SITE = "witchertavern", ALGOLIA_APP_ID = "Q2XOYHGPQV" }
 
 [env.dev]
-vars = { AEM_ORG = "aemsites", AEM_SITE = "author-kit" }
+vars = { AEM_ORG = "mathlov3", AEM_SITE = "witchertavern", ALGOLIA_APP_ID = "Q2XOYHGPQV" }
+
+[observability]
+[observability.logs]
+enabled = true
+invocation_logs = true

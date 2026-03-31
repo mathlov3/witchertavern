@@ -12,6 +12,7 @@
 
 import { fetchSchedule, fetchFromAem } from './handlers/aem.js';
 import fetchDaSc from './handlers/dasc.js';
+import handleAlgoliaIndex from './handlers/algolia.js';
 
 const ROUTES = [
   // Handle schedule manifests
@@ -107,6 +108,8 @@ const formatRequest = (env, request, url) => {
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
+
+    if (url.pathname === '/algolia-index') return handleAlgoliaIndex(req, env);
 
     const portResp = getPortRedirect(req, url);
     if (portResp) return portResp;

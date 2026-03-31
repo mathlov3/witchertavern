@@ -1,7 +1,7 @@
 import toggleScheduler from '../scheduler/scheduler.js';
 import initQuickEdit from '../quick-edit/quick-edit.js';
 
-const ALGOLIA_INDEX_ENDPOINT = 'https://webhook.site/64c1584d-4082-4761-b5ae-0ec8af35d62b';
+const ALGOLIA_INDEX_ENDPOINT = 'https://ak-website.vzrivpaket22.workers.dev/algolia-index';
 
 async function onPublished({ detail }) {
   const path = detail?.path ?? window.location.pathname;

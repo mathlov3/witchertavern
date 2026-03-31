@@ -1,8 +1,8 @@
 indices:
   recipes:
     include:
-      - /recipies/**
-    target: /recipies/query-index.json
+      - /recipes/**
+    target: /recipes/query-index.json
     properties:
       title:
         select: head > title
