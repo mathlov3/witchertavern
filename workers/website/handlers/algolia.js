@@ -1,5 +1,4 @@
 const META_FIELDS = [
-  'title',
   'description',
   'category',
   'world',
@@ -17,6 +16,10 @@ const CORS_HEADERS = {
 
 function normalizePath(path) {
   return path.replace(/\.md$/, '');
+}
+
+function extractTitle(html) {
+  return html.match(/<title>([^<]+)<\/title>/i)?.[1] ?? null;
 }
 
 function extractMeta(html, key) {
@@ -60,6 +63,9 @@ export default async function handleAlgoliaIndex(req, env) {
   const html = await pageRes.text();
   const record = { path };
 
+  const title = extractTitle(html);
+  if (title) record.title = title;
+
   META_FIELDS.forEach((field) => {
     const value = extractMeta(html, field);
     if (value) record[field] = value;
@@ -75,7 +81,7 @@ export default async function handleAlgoliaIndex(req, env) {
     return json({ skipped: true, reason: `non-recipe template: ${record.template ?? 'none'}` });
   }
 
-  const indexName = 'witchertavern_recipes_dev';
+  const indexName = env.ALGOLIA_INDEX_NAME;
   const objectID = encodeURIComponent(path);
 
   const algoliaRes = await fetch(

@@ -3,10 +3,10 @@ main = "index.js"
 compatibility_date = "2025-02-14"
 keep_vars = true
 
-vars = { AEM_ORG = "mathlov3", AEM_SITE = "witchertavern", ALGOLIA_APP_ID = "Q2XOYHGPQV" }
+vars = { AEM_ORG = "mathlov3", AEM_SITE = "witchertavern", ALGOLIA_APP_ID = "Q2XOYHGPQV", ALGOLIA_INDEX_NAME = "witchertavern_recipes_dev" }
 
 [env.dev]
-vars = { AEM_ORG = "mathlov3", AEM_SITE = "witchertavern", ALGOLIA_APP_ID = "Q2XOYHGPQV" }
+vars = { AEM_ORG = "mathlov3", AEM_SITE = "witchertavern", ALGOLIA_APP_ID = "Q2XOYHGPQV", ALGOLIA_INDEX_NAME = "witchertavern_recipes_dev" }
 
 [observability]
 [observability.logs]

@@ -10,6 +10,7 @@ async function onPublished({ detail }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ path }),
+      keepalive: true,
     });
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -23,8 +24,7 @@ export default async function init(sk) {
   sk.addEventListener('custom:quick-edit', initQuickEdit);
 
   // Index published pages in Algolia
-  sk.addEventListener('published', onPublished);
-  sk.addEventListener('previewed', onPublished);
+  sk.addEventListener('updated', onPublished);
 
   // Show after all decoration is finished
   sk.classList.add('is-ready');
