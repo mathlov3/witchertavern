@@ -169,7 +169,13 @@
   }
 
   /* Game of Thrones — dark blue/steel */
-  &.recipe-card-badge-game-of-thrones {
+  &.recipe-card-badge-got {
+    background: rgba(0, 0, 0, 0.88);
+    color: #a9aaab;
+    border: 1px solid #000000;
+  }
+
+  &.recipe-card-badge-lotr {
     background: rgb(18 22 48 / 88%);
     color: #a8c0e8;
     border: 1px solid #2a3464;

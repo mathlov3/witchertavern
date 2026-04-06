@@ -17,7 +17,6 @@ export default async function getPlaceholders() {
     const resp = await fetch(`${prefix}/placeholders.json`);
     if (!resp.ok) throw new Error(resp.status);
     const json = await resp.json();
-    console.log(json)
     cache[prefix] = Object.fromEntries(
       (json.data ?? []).map(({ key, value }) => [key, value]),
     );

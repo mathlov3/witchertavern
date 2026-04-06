@@ -63,6 +63,9 @@ export default async function handleAlgoliaIndex(req, env) {
   const html = await pageRes.text();
   const record = { path };
 
+  const lastModified = pageRes.headers.get('last-modified');
+  if (lastModified) record.lastModified = Math.floor(new Date(lastModified).getTime() / 1000);
+
   const title = extractTitle(html);
   if (title) record.title = title;
 

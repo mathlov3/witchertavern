@@ -238,7 +238,7 @@ function createQueryIndexProvider(url) {
 
 // ── Card ──────────────────────────────────────────────────────────────────────
 
-function buildCard(hit) {
+function buildCard(hit, placeholders = {}) {
   const card = document.createElement('a');
   card.className = 'recipe-card';
   card.href = hit.path ?? '#';
@@ -249,7 +249,7 @@ function buildCard(hit) {
   if (hit.world) {
     const badge = document.createElement('span');
     badge.className = `recipe-card-badge recipe-card-badge-${universeSlug(hit.world)}`;
-    badge.textContent = hit.world;
+    badge.textContent = ph(placeholders, `facet-name.universe.${universeSlug(hit.world)}`, hit.world);
     imgWrap.append(badge);
   }
 
@@ -271,11 +271,14 @@ function buildCard(hit) {
   if (hit.category) {
     const pill = document.createElement('span');
     pill.className = 'recipe-card-category';
-    pill.textContent = hit.category;
+    pill.textContent = ph(placeholders, `facet-name.category.${hit.category}`, hit.category);
     meta.append(pill);
   }
-  const metaText = [hit.servings && `${hit.servings} servings`, hit.difficulty]
-    .filter(Boolean).join(' · ');
+  const servingsLabel = ph(placeholders, 'recipe-search.servings-count', 'Servings: ');
+  const metaText = [
+    hit.servings && `${servingsLabel}${hit.servings}`,
+    hit.difficulty && ph(placeholders, `facet-name.difficalty.${hit.difficulty}`, hit.difficulty),
+  ].filter(Boolean).join(' · ');
   if (metaText) {
     const span = document.createElement('span');
     span.className = 'recipe-card-servings';
@@ -331,11 +334,11 @@ function buildSidebar(facetValues, filterState, onChange, placeholders = {}) {
   const mobileHeader = document.createElement('div');
   mobileHeader.className = 'rs-sidebar-mobile-header';
   const mobileTitle = document.createElement('span');
-  mobileTitle.textContent = 'Filters';
+  mobileTitle.textContent = ph(placeholders, 'recipe-search.filters', 'Filters');
   const mobileClose = document.createElement('button');
   mobileClose.type = 'button';
   mobileClose.className = 'rs-sidebar-close';
-  mobileClose.setAttribute('aria-label', 'Close filters');
+  mobileClose.setAttribute('aria-label', ph(placeholders, 'recipe-search.close-filters', 'Close filters'));
   mobileHeader.append(mobileTitle, mobileClose);
   aside.append(mobileHeader);
 
@@ -377,12 +380,25 @@ function buildSidebar(facetValues, filterState, onChange, placeholders = {}) {
 
 // ── Active filter tags ────────────────────────────────────────────────────────
 
-function tagLabel(key, value) {
-  if (key === 'cookTime') return BUCKET_LABEL[value] ?? value;
+const TAG_PH_PREFIX = {
+  category: 'facet-name.category',
+  difficulty: 'facet-name.difficalty',
+  world: 'facet-name.universe',
+};
+
+function tagLabel(key, value, placeholders) {
+  if (key === 'cookTime') {
+    const bucket = COOK_BUCKETS.find((b) => b.value === value);
+    return bucket
+      ? ph(placeholders, `facet-name.cook-time.${bucket.phKey}`, BUCKET_LABEL[value] ?? value)
+      : value;
+  }
+  const prefix = TAG_PH_PREFIX[key];
+  if (prefix) return ph(placeholders, `${prefix}.${value}`, value);
   return value;
 }
 
-function buildActiveTags(filterState, onChange) {
+function buildActiveTags(filterState, onChange, placeholders = {}) {
   const bar = document.createElement('div');
   bar.className = 'rs-active-tags';
 
@@ -392,7 +408,7 @@ function buildActiveTags(filterState, onChange) {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'rs-tag';
-      const text = document.createTextNode(tagLabel(key, value));
+      const text = document.createTextNode(tagLabel(key, value, placeholders));
       const x = document.createElement('span');
       x.className = 'rs-tag-x';
       x.setAttribute('aria-hidden', 'true');
@@ -410,7 +426,7 @@ function buildActiveTags(filterState, onChange) {
     const clearBtn = document.createElement('button');
     clearBtn.type = 'button';
     clearBtn.className = 'rs-tag rs-tag-clear';
-    clearBtn.textContent = 'Clear all';
+    clearBtn.textContent = ph(placeholders, 'recipe-search.clear-all-label', 'Clear all')
     clearBtn.addEventListener('click', () => {
       Object.values(filterState).forEach((s) => s.clear());
       onChange();
@@ -570,14 +586,14 @@ export default async function decorate(block) {
   const filterToggle = document.createElement('button');
   filterToggle.type = 'button';
   filterToggle.className = 'rs-filter-toggle';
-  filterToggle.textContent = 'Filters';
+  filterToggle.textContent = ph(placeholders, 'recipe-search.filters', 'Filters');
   filterToggle.addEventListener('click', openFilters);
 
   // ── Active tags ────────────────────────────────────────────
   let activeTagsEl = buildActiveTags(filterState, () => {
     currentPage = 0;
     doRefresh();
-  });
+  }, placeholders);
 
   // ── Results area ───────────────────────────────────────────
   const resultsWrap = document.createElement('div');
@@ -614,9 +630,9 @@ export default async function decorate(block) {
       else history.replaceState(null, '', url);
     }
 
-    grid.replaceChildren(...pageHits.map(buildCard));
+    grid.replaceChildren(...pageHits.map((hit) => buildCard(hit, placeholders)));
     emptyEl.hidden = filtered.length > 0;
-    countEl.textContent = filtered.length === 1 ? '1 recipe found' : `${filtered.length} recipes found`;
+    countEl.textContent = placeholders['recipe-search.recipes-found-label'] + filtered.length;
 
     const newPagination = buildPagination(currentPage, totalPages, (page) => {
       currentPage = page;
@@ -628,14 +644,16 @@ export default async function decorate(block) {
     const newTags = buildActiveTags(filterState, () => {
       currentPage = 0;
       doRefresh();
-    });
+    }, placeholders);
     activeTagsEl.replaceWith(newTags);
     activeTagsEl = newTags;
 
+    const filtersLabel = ph(placeholders, 'recipe-search.filters', 'Filters');
     const n = Object.values(filterState).reduce((sum, s) => sum + s.size, 0);
-    filterToggle.textContent = n > 0 ? `Filters (${n})` : 'Filters';
+    filterToggle.textContent = n > 0 ? `${filtersLabel} (${n})` : filtersLabel;
     filterToggle.classList.toggle('rs-filter-toggle--active', n > 0);
-    applyBtn.textContent = filtered.length === 1 ? 'Show 1 result' : `Show ${filtered.length} results`;
+    
+    applyBtn.textContent = `${ph(placeholders, 'recipe-search.show-results', 'Show results: ')}${filtered.length}`
   }
 
   // ── Refresh — queries provider then re-renders ─────────────
