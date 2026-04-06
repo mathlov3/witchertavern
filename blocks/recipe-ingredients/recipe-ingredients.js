@@ -62,7 +62,7 @@ export default async function decorate(block) {
   // The heading element (h2, h3, etc.) is reused as-is from the authored content.
   let titleEl = null;
   if (rows.length > 1 && !rows[0].querySelector("li")) {
-    const candidate = rows[0].querySelector(":is(h1, h2, h3, h4, h5, h6, p)");
+    const candidate = rows[0].querySelector(":is(h1, h2, h3, h4, h5, h6, p, div)");
     if (candidate?.textContent.trim()) {
       titleEl = candidate;
       titleEl.classList.add("ingredient-title");

@@ -1,6 +1,8 @@
 import { getConfig, getMetadata } from '../../scripts/ak.js';
 import { loadFragment } from '../fragment/fragment.js';
 import { setColorScheme } from '../section-metadata/section-metadata.js';
+import getPlaceholders from '../../scripts/utils/placeholders.js';
+import { getSearchQuery, navigateToSearch, SEARCH_QUERY_EVENT } from '../../scripts/utils/search.js';
 
 const { locale } = getConfig();
 
@@ -10,6 +12,55 @@ const HEADER_ACTIONS = [
   '/tools/widgets/language',
   '/tools/widgets/toggle',
 ];
+
+const MIN_QUERY_LEN = 3;
+const MAX_SUGGESTIONS = 6;
+const DEBOUNCE_MS = 300;
+const SEARCH_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>`;
+
+// ── Search providers ───────────────────────────────────────────────────────────
+
+function createAlgoliaProvider(appId, searchKey, indexName) {
+  return async (query) => {
+    try {
+      const res = await fetch(
+        `https://${appId}-dsn.algolia.net/1/indexes/${indexName}/query`,
+        {
+          method: 'POST',
+          headers: {
+            'X-Algolia-Application-Id': appId,
+            'X-Algolia-API-Key': searchKey,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query,
+            hitsPerPage: MAX_SUGGESTIONS,
+            attributesToRetrieve: ['path', 'title', 'category', 'image'],
+          }),
+        },
+      );
+      if (!res.ok) return [];
+      return (await res.json()).hits ?? [];
+    } catch { return []; }
+  };
+}
+
+let queryIndexCache = null;
+
+function createQueryIndexProvider(url) {
+  return async (query) => {
+    if (!queryIndexCache) {
+      try {
+        const resp = await fetch(url);
+        queryIndexCache = resp.ok ? ((await resp.json()).data ?? []) : [];
+      } catch { queryIndexCache = []; }
+    }
+    const q = query.toLowerCase();
+    return queryIndexCache
+      .filter((item) => item.title?.toLowerCase().includes(q))
+      .slice(0, MAX_SUGGESTIONS);
+  };
+}
 
 function closeAllMenus() {
   const openMenus = document.body.querySelectorAll('header .is-open');
@@ -110,6 +161,200 @@ async function decorateAction(header, pattern) {
   if (pattern === '/tools/widgets/toggle') decorateNavToggle(btn);
 }
 
+function decorateSearch(section, placeholders, searchProvider) {
+  const defaultContent = section.querySelector(':scope > .default-content');
+  if (!defaultContent) return;
+
+  const icon = () => {
+    const span = document.createElement('span');
+    span.innerHTML = SEARCH_ICON;
+    return span.firstElementChild;
+  };
+
+  // Mobile toggle button
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'search-toggle';
+  toggleBtn.setAttribute('aria-label', 'Search');
+  toggleBtn.setAttribute('aria-expanded', 'false');
+  toggleBtn.append(icon());
+
+  // Form
+  const inputPlaceholder = placeholders['search-input-field.placeholder-text'] || 'Search recipes…';
+  const form = document.createElement('form');
+  form.className = 'hs-form';
+  form.setAttribute('role', 'search');
+
+  const iconBtn = document.createElement('button');
+  iconBtn.type = 'submit';
+  iconBtn.className = 'hs-icon-btn';
+  iconBtn.setAttribute('aria-label', 'Search');
+  iconBtn.append(icon());
+
+  const input = document.createElement('input');
+  input.type = 'search';
+  input.className = 'hs-input';
+  input.placeholder = inputPlaceholder;
+  input.setAttribute('aria-label', inputPlaceholder);
+  input.setAttribute('autocomplete', 'off');
+  input.value = getSearchQuery();
+
+  form.append(iconBtn, input);
+
+  // Suggestions list
+  const suggestionsList = document.createElement('ul');
+  suggestionsList.className = 'hs-suggestions';
+  suggestionsList.setAttribute('role', 'listbox');
+  suggestionsList.hidden = true;
+
+  // Panel
+  const panel = document.createElement('div');
+  panel.className = 'header-search';
+  panel.append(form, suggestionsList);
+
+  // Wrapper
+  const wrapper = document.createElement('div');
+  wrapper.className = 'action-wrapper search';
+  wrapper.append(toggleBtn, panel);
+
+  const langWrapper = defaultContent.querySelector('.action-wrapper.language');
+  if (langWrapper) {
+    defaultContent.insertBefore(wrapper, langWrapper);
+  } else {
+    defaultContent.prepend(wrapper);
+  }
+
+  // ── Suggestions state ──────────────────────────────────────────────────────
+
+  let timer;
+  let activeIndex = -1;
+  let currentItems = [];
+
+  function renderSuggestions(items) {
+    currentItems = items;
+    activeIndex = -1;
+    suggestionsList.replaceChildren();
+
+    if (!items.length) {
+      suggestionsList.hidden = true;
+      return;
+    }
+
+    for (const item of items) {
+      const li = document.createElement('li');
+      li.className = 'hs-suggestion';
+      li.setAttribute('role', 'option');
+      li.setAttribute('tabindex', '-1');
+
+      if (item.image) {
+        const img = document.createElement('img');
+        img.src = item.image;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.width = 48;
+        img.height = 48;
+        li.append(img);
+      }
+
+      const info = document.createElement('div');
+      info.className = 'hs-suggestion-info';
+
+      const title = document.createElement('span');
+      title.className = 'hs-suggestion-title';
+      title.textContent = item.title;
+      info.append(title);
+
+      if (item.category) {
+        const cat = document.createElement('span');
+        cat.className = 'hs-suggestion-category';
+        cat.textContent = item.category;
+        info.append(cat);
+      }
+
+      li.append(info);
+
+      li.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // keep focus on input until navigation
+        window.location.href = item.path;
+      });
+
+      suggestionsList.append(li);
+    }
+
+    suggestionsList.hidden = false;
+  }
+
+  function setActive(index) {
+    const items = [...suggestionsList.querySelectorAll('.hs-suggestion')];
+    items.forEach((el, i) => el.classList.toggle('is-active', i === index));
+    activeIndex = index;
+  }
+
+  function closeSuggestions() {
+    suggestionsList.hidden = true;
+    activeIndex = -1;
+    currentItems = [];
+  }
+
+  // ── Input events ───────────────────────────────────────────────────────────
+
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    const val = input.value.trim();
+
+    if (val.length < MIN_QUERY_LEN) {
+      closeSuggestions();
+      return;
+    }
+
+    timer = setTimeout(async () => {
+      renderSuggestions(await searchProvider(val));
+    }, DEBOUNCE_MS);
+  });
+
+  input.addEventListener('keydown', (e) => {
+    const items = [...suggestionsList.querySelectorAll('.hs-suggestion')];
+    if (!items.length) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActive(Math.min(activeIndex + 1, items.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActive(Math.max(activeIndex - 1, 0));
+    } else if (e.key === 'Enter' && activeIndex >= 0) {
+      e.preventDefault();
+      window.location.href = currentItems[activeIndex].path;
+    } else if (e.key === 'Escape') {
+      closeSuggestions();
+    }
+  });
+
+  input.addEventListener('blur', () => {
+    setTimeout(closeSuggestions, 150);
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    clearTimeout(timer);
+    closeSuggestions();
+    const val = input.value.trim();
+    navigateToSearch('/recipes', val);
+  });
+
+  // ── Mobile toggle ──────────────────────────────────────────────────────────
+
+  toggleBtn.addEventListener('click', () => {
+    toggleMenu(wrapper);
+    const isOpen = wrapper.classList.contains('is-open');
+    toggleBtn.setAttribute('aria-expanded', String(isOpen));
+    if (isOpen) input.focus();
+  });
+
+  window.addEventListener('popstate', () => {
+    input.value = getSearchQuery();
+  });
+}
+
 function decorateMenu() {
   // TODO: finish single menu support
   return null;
@@ -168,7 +413,7 @@ async function decorateActionSection(section) {
   section.classList.add('actions-section');
 }
 
-async function decorateHeader(fragment) {
+async function decorateHeader(fragment, placeholders, searchProvider) {
   const sections = fragment.querySelectorAll(':scope > .section');
   if (sections[0]) decorateBrandSection(sections[0]);
   if (sections[1]) decorateNavSection(sections[1]);
@@ -177,6 +422,8 @@ async function decorateHeader(fragment) {
   for (const pattern of HEADER_ACTIONS) {
     decorateAction(fragment, pattern);
   }
+
+  if (sections[2]) decorateSearch(sections[2], placeholders, searchProvider);
 }
 
 /**
@@ -187,9 +434,22 @@ export default async function init(el) {
   const headerMeta = getMetadata('header');
   const path = headerMeta || HEADER_PATH;
   try {
-    const fragment = await loadFragment(`${locale.prefix}${path}`);
+    const [fragment, placeholders] = await Promise.all([
+      loadFragment(`${locale.prefix}${path}`),
+      getPlaceholders(),
+    ]);
+    const searchKey = getMetadata('algolia-search-key');
+    const searchProvider = searchKey
+      ? createAlgoliaProvider(
+          getMetadata('algolia-app-id') || 'Q2XOYHGPQV',
+          searchKey,
+          getMetadata('algolia-index') || 'witchertavern_recipes_dev',
+        )
+      : createQueryIndexProvider(
+          getMetadata('query-index-url') || '/recipes/query-index.json',
+        );
     fragment.classList.add('header-content');
-    await decorateHeader(fragment);
+    await decorateHeader(fragment, placeholders, searchProvider);
     el.append(fragment);
   } catch (e) {
     throw Error(e);

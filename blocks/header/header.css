@@ -77,6 +77,160 @@ header {
     }
   }
 
+  .action-wrapper.search {
+    height: var(--header-height);
+
+    .search-toggle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      height: 100%;
+      width: 44px;
+      color: var(--color-text-secondary);
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: var(--color-text-accent);
+      }
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .header-search {
+      display: none;
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: var(--header-height);
+      z-index: 999;
+      padding: var(--spacing-s) var(--grid-gutter-width);
+      background: var(--color-ink-800);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    &.is-open .header-search {
+      display: block;
+    }
+
+    .hs-form {
+      display: flex;
+      align-items: center;
+      background: var(--color-background-elevated);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-m);
+      transition: border-color 0.2s, box-shadow 0.2s;
+
+      &:focus-within {
+        border-color: var(--color-border-accent);
+        box-shadow: 0 0 0 3px rgb(200 144 40 / 12%);
+      }
+    }
+
+    .hs-icon-btn {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      padding: 0 var(--spacing-s);
+      cursor: pointer;
+      height: 44px;
+      color: var(--color-text-muted);
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .hs-input {
+      flex: 1;
+      padding: 11px var(--spacing-s) 11px 0;
+      background: transparent;
+      border: none;
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: var(--body-font-size-m);
+      min-width: 0;
+
+      &::placeholder {
+        color: var(--color-text-muted);
+      }
+
+      &:focus {
+        outline: none;
+      }
+
+      &::-webkit-search-cancel-button {
+        filter: invert(0.5);
+        cursor: pointer;
+      }
+    }
+
+    .hs-suggestions {
+      list-style: none;
+      margin: var(--spacing-xs) 0 0;
+      padding: 0;
+      background: var(--color-ink-700);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-m);
+      overflow: hidden;
+    }
+
+    .hs-suggestion {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-s);
+      padding: var(--spacing-s) var(--spacing-m);
+      cursor: pointer;
+      transition: background 0.15s;
+
+      &:hover,
+      &.is-active {
+        background: var(--color-ink-600);
+      }
+
+      img {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: var(--radius-s);
+        flex-shrink: 0;
+      }
+    }
+
+    .hs-suggestion-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .hs-suggestion-title {
+      font-size: var(--body-font-size-m);
+      font-weight: 600;
+      color: var(--color-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hs-suggestion-category {
+      font-size: var(--body-font-size-xs);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+
   .breadcrumbs {
     display: none;
   }
@@ -341,6 +495,40 @@ header {
             border-bottom: initial;
           }
         }
+      }
+    }
+
+    .action-wrapper.search {
+      height: auto;
+      align-self: center;
+      right: 0;
+      position: relative;
+
+      .search-toggle {
+        display: none;
+      }
+
+      .header-search {
+        display: block;
+        position: static;
+        padding: 0;
+        background: transparent;
+        border: none;
+        width: 240px;
+      }
+
+      .hs-input {
+        padding-block: 7px;
+      }
+
+      .hs-suggestions {
+        position: absolute;
+        top: calc(100% + var(--spacing-xs));
+        left: 0;
+        right: 0;
+        z-index: 100;
+        margin: 0;
+        min-width: 320px;
       }
     }
 
