@@ -42,13 +42,13 @@ function buildLabel(text) {
   return label;
 }
 
-function buildDifficultyStat(value, ph) {
+function buildDifficultyStat(value, translations) {
   const level = DIFFICULTY_LEVELS[value?.toLowerCase()];
   const stat = document.createElement('div');
   stat.className = 'recipe-stat';
   stat.dataset.type = 'difficulty';
 
-  if (ph['recipe-difficulty-label']) stat.append(buildLabel(ph['recipe-difficulty-label']));
+  if (translations['recipe-difficulty-label']) stat.append(buildLabel(translations['recipe-difficulty-label']));
 
   if (level) {
     const icons = document.createElement('div');
@@ -63,13 +63,13 @@ function buildDifficultyStat(value, ph) {
   }
 
   const p = document.createElement('p');
-  p.textContent = ph[`recipe-difficulty-${value?.toLowerCase()}`] ?? value ?? '—';
+  p.textContent = translations[`recipe-difficulty-${value?.toLowerCase()}`] ?? value ?? '—';
   stat.append(p);
 
   return stat;
 }
 
-function buildStats(ph) {
+function buildStats(translations) {
   const values = STATS.map(({ key }) => getMetadata(key));
   if (values.every((v) => !v)) return null;
 
@@ -79,13 +79,13 @@ function buildStats(ph) {
   STATS.forEach(({ type }, i) => {
     let stat;
     if (type === 'difficulty') {
-      stat = buildDifficultyStat(values[i], ph);
+      stat = buildDifficultyStat(values[i], translations);
     } else {
       stat = document.createElement('div');
       stat.className = 'recipe-stat';
       stat.dataset.type = type;
       const labelKey = `recipe-${type}-label`;
-      if (ph[labelKey]) stat.append(buildLabel(ph[labelKey]));
+      if (translations[labelKey]) stat.append(buildLabel(translations[labelKey]));
       const p = document.createElement('p');
       p.textContent = values[i] || '—';
       stat.append(p);
@@ -96,7 +96,7 @@ function buildStats(ph) {
   return bar;
 }
 
-function buildIntro(row, ph) {
+function buildIntro(row, translations) {
   const intro = document.createElement('div');
   intro.className = 'recipe-intro';
 
@@ -115,7 +115,7 @@ function buildIntro(row, ph) {
     main.append(quote);
   }
 
-  const stats = buildStats(ph);
+  const stats = buildStats(translations);
   if (stats) main.append(stats);
 
   intro.append(main);
@@ -141,7 +141,7 @@ function buildIntro(row, ph) {
 
 export default async function decorate(block) {
   const rows = [...block.children];
-  const ph = await getPlaceholders();
+  const translations = await getPlaceholders();
 
   // Pull the page heading (h1/h2) from default-content into the recipe block
   // so the title sits visually next to the description and image.
@@ -156,6 +156,6 @@ export default async function decorate(block) {
     children.push(header);
   }
 
-  if (rows[0]) children.push(buildIntro(rows[0], ph));
+  if (rows[0]) children.push(buildIntro(rows[0], translations));
   block.replaceChildren(...children);
 }

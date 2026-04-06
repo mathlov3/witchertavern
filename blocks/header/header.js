@@ -1,7 +1,7 @@
 import { getConfig, getMetadata } from '../../scripts/ak.js';
 import { loadFragment } from '../fragment/fragment.js';
 import { setColorScheme } from '../section-metadata/section-metadata.js';
-import getPlaceholders from '../../scripts/utils/placeholders.js';
+import { i18n } from '../../scripts/utils/placeholders.js';
 import { getSearchQuery, navigateToSearch, SEARCH_QUERY_EVENT } from '../../scripts/utils/search.js';
 
 const { locale } = getConfig();
@@ -161,7 +161,7 @@ async function decorateAction(header, pattern) {
   if (pattern === '/tools/widgets/toggle') decorateNavToggle(btn);
 }
 
-function decorateSearch(section, placeholders, searchProvider) {
+async function decorateSearch(section, searchProvider) {
   const defaultContent = section.querySelector(':scope > .default-content');
   if (!defaultContent) return;
 
@@ -179,7 +179,7 @@ function decorateSearch(section, placeholders, searchProvider) {
   toggleBtn.append(icon());
 
   // Form
-  const inputPlaceholder = placeholders['search-input-field.placeholder-text'] || 'Search recipes…';
+  const inputPlaceholder = await i18n('search-input-field.placeholder-text', 'Search recipes…');
   const form = document.createElement('form');
   form.className = 'hs-form';
   form.setAttribute('role', 'search');
@@ -413,7 +413,7 @@ async function decorateActionSection(section) {
   section.classList.add('actions-section');
 }
 
-async function decorateHeader(fragment, placeholders, searchProvider) {
+async function decorateHeader(fragment, searchProvider) {
   const sections = fragment.querySelectorAll(':scope > .section');
   if (sections[0]) decorateBrandSection(sections[0]);
   if (sections[1]) decorateNavSection(sections[1]);
@@ -423,7 +423,7 @@ async function decorateHeader(fragment, placeholders, searchProvider) {
     decorateAction(fragment, pattern);
   }
 
-  if (sections[2]) decorateSearch(sections[2], placeholders, searchProvider);
+  if (sections[2]) decorateSearch(sections[2], searchProvider);
 }
 
 /**
@@ -434,9 +434,8 @@ export default async function init(el) {
   const headerMeta = getMetadata('header');
   const path = headerMeta || HEADER_PATH;
   try {
-    const [fragment, placeholders] = await Promise.all([
-      loadFragment(`${locale.prefix}${path}`),
-      getPlaceholders(),
+    const [fragment] = await Promise.all([
+      loadFragment(`${locale.prefix}${path}`)
     ]);
     const searchKey = getMetadata('algolia-search-key');
     const searchProvider = searchKey
@@ -449,7 +448,7 @@ export default async function init(el) {
           getMetadata('query-index-url') || '/recipes/query-index.json',
         );
     fragment.classList.add('header-content');
-    await decorateHeader(fragment, placeholders, searchProvider);
+    await decorateHeader(fragment, searchProvider);
     el.append(fragment);
   } catch (e) {
     throw Error(e);

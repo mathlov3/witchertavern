@@ -1,7 +1,7 @@
 {
   // Disable the built-in formatter for JS and CSS so it doesn't conflict with linters
   "[javascript]": {
-    "editor.defaultFormatter": null,
+    "editor.defaultFormatter": "vscode.typescript-language-features",
     "editor.formatOnSave": false
   },
   "[css]": {

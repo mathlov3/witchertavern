@@ -28,3 +28,12 @@ export default async function getPlaceholders() {
 
   return cache[prefix];
 }
+
+export const i18n = async (keyName, defaultValue) => {
+  const dictionary = await getPlaceholders();
+  const value = dictionary[keyName];
+  if (value) {
+    return value;
+  }
+  return defaultValue || keyName;
+}

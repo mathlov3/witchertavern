@@ -22,7 +22,7 @@
  */
 
 import { getSearchQuery, navigateToSearch, SEARCH_QUERY_EVENT, } from '../../scripts/utils/search.js';
-import getPlaceholders from '../../scripts/utils/placeholders.js';
+import { i18n } from '../../scripts/utils/placeholders.js';
 
 const DEBOUNCE_MS = 300;
 
@@ -33,10 +33,9 @@ function dispatch(query) {
 }
 
 export default async function decorate(block) {
-  const ph = await getPlaceholders();
   const rows = [...block.querySelectorAll(':scope > div')];
   const targetUrl = rows[0]?.querySelector(':scope > div')?.textContent?.trim() || '/recipes';
-  const placeholder = ph['search-input-field.placeholder-text'] || 'Dish name ...';
+  const placeholder = await i18n('search-input-field.placeholder-text', 'Dish name ...');
 
   block.replaceChildren();
 
@@ -58,7 +57,7 @@ export default async function decorate(block) {
   const btn = document.createElement('button');
   btn.type = 'submit';
   btn.className = 'si-submit';
-  btn.textContent = ph['search-input-field.search-button-label'] || 'Search';
+  btn.textContent = await i18n('search-input-field.search-button-label', 'Search');
 
   // Live keystrokes — dispatched for recipe-search on the same page.
   // On other pages the event goes unhandled (no navigation on keypress).
