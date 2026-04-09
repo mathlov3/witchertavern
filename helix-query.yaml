@@ -4,6 +4,8 @@ indices:
       - /recipes/**
       - /recipes/**/**
     target: /recipes/query-index.json
+    filter:
+      template: recipe
     properties:
       title:
         select: head > title
