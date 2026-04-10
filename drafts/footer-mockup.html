@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Witcher Tavern — Footer Mockup v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-ink-200: #c4a070;
+      --color-ink-300: #a87e4a;
+      --color-ink-600: #4a3418;
+      --color-ink-700: #2d1f0e;
+      --color-ink-800: #1a1108;
+      --color-ink-900: #0c0905;
+      --color-gold-400: #d4a840;
+      --color-gold-500: #c89028;
+      --color-gold-700: #845410;
+      --color-parchment-300: #f0e4cc;
+
+      --spacing-xs:  4px;
+      --spacing-s:   8px;
+      --spacing-m:   12px;
+      --spacing-l:   24px;
+      --spacing-xl:  32px;
+      --spacing-xxl: 48px;
+      --spacing-3xl: 64px;
+
+      --font-heading: 'Cormorant Garamond', Georgia, serif;
+      --font-body:    'EB Garamond', Georgia, serif;
+    }
+
+    body {
+      background: #080604;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      font-family: var(--font-body);
+    }
+
+    .page-spacer {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-ink-300);
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.35;
+    }
+
+    /* ══════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════ */
+    footer {
+      background: var(--color-ink-900);
+      border-top: 1px solid var(--color-gold-700);
+      position: relative;
+      overflow: hidden;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 10% 0%, rgba(200,144,40,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 90% 100%, rgba(184,32,32,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── Main section ─────────────────────── */
+    .footer-main {
+      padding: var(--spacing-3xl) var(--spacing-l) var(--spacing-xxl);
+      position: relative;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--spacing-xxl);
+    }
+
+    /* Brand */
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-m);
+    }
+
+    .footer-logo {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 2px;
+      text-decoration: none;
+    }
+
+    .footer-logo-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--color-gold-500);
+    }
+
+    .footer-logo-name {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--color-parchment-300);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .footer-logo-name em {
+      font-style: italic;
+      color: var(--color-gold-400);
+    }
+
+    .footer-tagline {
+      font-size: 14px;
+      color: var(--color-ink-200);
+      line-height: 1.6;
+      max-width: 280px;
+    }
+
+    /* ── Nav: 2 main columns ──────────────── */
+    .footer-nav {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--spacing-xxl);
+    }
+
+    /* Shared column styles */
+    .nav-col-title {
+      font-family: var(--font-heading);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--color-gold-500);
+      margin-bottom: var(--spacing-l);
+      padding-bottom: var(--spacing-s);
+      border-bottom: 1px solid var(--color-gold-700);
+    }
+
+    .nav-col-title a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-col-title a:hover {
+      color: var(--color-gold-400);
+    }
+
+    /* Link hover arrow effect */
+    .nav-col a {
+      font-size: 15px;
+      color: var(--color-ink-200);
+      text-decoration: none;
+      line-height: 1.4;
+      transition: color 0.2s, padding-left 0.2s;
+      position: relative;
+    }
+
+    .nav-col a::before {
+      content: '›';
+      position: absolute;
+      left: -14px;
+      color: var(--color-gold-500);
+      opacity: 0;
+      transition: opacity 0.2s, left 0.2s;
+    }
+
+    .nav-col a:hover {
+      color: var(--color-parchment-300);
+      padding-left: 14px;
+    }
+
+    .nav-col a:hover::before {
+      opacity: 1;
+      left: 0;
+    }
+
+    /* ── Recipes column ───────────────────── */
+    .nav-col-recipes .recipe-categories {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-m) var(--spacing-xl);
+    }
+
+    .nav-col-recipes ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-m);
+    }
+
+    /* ── Rest column ──────────────────────── */
+    .nav-col-rest ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-m);
+    }
+
+    /* ── Legal section ────────────────────── */
+    .footer-legal {
+      border-top: 1px solid var(--color-ink-700);
+      padding: var(--spacing-l);
+      position: relative;
+    }
+
+    .footer-legal-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-l);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .legal-link {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--color-ink-300);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .legal-link:hover {
+      color: var(--color-gold-400);
+    }
+
+    .legal-sep {
+      width: 3px;
+      height: 3px;
+      background: var(--color-ink-600);
+      border-radius: 50%;
+    }
+
+    /* ── Copyright section ────────────────── */
+    .footer-copyright {
+      border-top: 1px solid var(--color-ink-800);
+      padding: var(--spacing-m) var(--spacing-l);
+      text-align: center;
+      background: rgba(0,0,0,0.3);
+    }
+
+    .footer-copyright p {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--color-ink-300);
+      text-transform: uppercase;
+    }
+
+    .footer-copyright span {
+      color: var(--color-gold-700);
+    }
+
+    /* ── Tablet 600px ─────────────────────── */
+    @media (width >= 600px) {
+      .footer-main { padding: var(--spacing-3xl) var(--spacing-xxl); }
+      .footer-legal { padding: var(--spacing-l) var(--spacing-xxl); }
+      .footer-copyright { padding: var(--spacing-m) var(--spacing-xxl); }
+
+      .footer-legal-inner { justify-content: flex-start; }
+
+      .footer-nav {
+        grid-template-columns: 2fr 1fr;
+        gap: var(--spacing-3xl);
+      }
+    }
+
+    /* ── Desktop 900px ────────────────────── */
+    @media (width >= 900px) {
+      .footer-inner {
+        grid-template-columns: 260px 1fr;
+        gap: var(--spacing-3xl);
+        align-items: start;
+      }
+
+      .footer-brand {
+        border-right: 1px solid var(--color-ink-700);
+        padding-right: var(--spacing-3xl);
+      }
+
+      .footer-legal-inner { justify-content: space-between; }
+      .footer-copyright { text-align: left; }
+      .footer-copyright .inner { max-width: 1200px; margin: 0 auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-spacer">↓ footer mockup v2 ↓</div>
+
+  <footer>
+
+    <!-- SECTION 1: Main -->
+    <div class="footer-main">
+      <div class="footer-inner">
+
+        <!-- Brand -->
+        <div class="footer-brand">
+          <a href="/" class="footer-logo">
+            <span class="footer-logo-eyebrow">Est. in the Northern Realms</span>
+            <span class="footer-logo-name">Witcher <em>Tavern</em></span>
+          </a>
+          <p class="footer-tagline">
+            Ancient recipes, forgotten flavours. Inspired by the lore of the Northern Realms — cooked in your kitchen.
+          </p>
+        </div>
+
+        <!-- Nav: 2 columns -->
+        <nav class="footer-nav" aria-label="Footer navigation">
+
+          <!-- Column 1: Recipes (heading links to /recipes, 2 sub-columns of categories) -->
+          <div class="nav-col nav-col-recipes">
+            <div class="nav-col-title">
+              <a href="/recipes">Recipes</a>
+            </div>
+            <div class="recipe-categories">
+              <ul>
+                <li><a href="/recipes/soups-stews">Soups &amp; Stews</a></li>
+                <li><a href="/recipes/meats-game">Meats &amp; Game</a></li>
+                <li><a href="/recipes/breads-pies">Breads &amp; Pies</a></li>
+              </ul>
+              <ul>
+                <li><a href="/recipes/ales-meads">Ales &amp; Meads</a></li>
+                <li><a href="/recipes/sweets">Sweets &amp; Pastries</a></li>
+                <li><a href="/recipes/preserves">Preserves</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Column 2: Rest -->
+          <div class="nav-col nav-col-rest">
+            <div class="nav-col-title">Explore</div>
+            <ul>
+              <li><a href="/">Home</a></li>
+              <li><a href="/recipes/search">Recipe Search</a></li>
+              <li><a href="/about">About</a></li>
+            </ul>
+          </div>
+
+        </nav>
+
+      </div>
+    </div>
+
+    <!-- SECTION 2: Legal -->
+    <div class="footer-legal">
+      <div class="footer-legal-inner">
+        <a href="/privacy" class="legal-link">Privacy Policy</a>
+        <div class="legal-sep" aria-hidden="true"></div>
+        <a href="/terms" class="legal-link">Terms of Use</a>
+        <div class="legal-sep" aria-hidden="true"></div>
+        <a href="/cookies" class="legal-link">Cookie Settings</a>
+      </div>
+    </div>
+
+    <!-- SECTION 3: Copyright -->
+    <div class="footer-copyright">
+      <div class="inner">
+        <p>© 2026 <span>Witcher Tavern</span>. All rights reserved. Not affiliated with CD Projekt Red.</p>
+      </div>
+    </div>
+
+  </footer>
+
+</body>
+</html>

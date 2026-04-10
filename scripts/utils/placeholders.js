@@ -20,7 +20,6 @@ export default async function getPlaceholders() {
     cache[prefix] = Object.fromEntries(
       (json.data ?? []).map(({ key, value }) => [key, value]),
     );
-    console.log(cache[prefix])
   } catch (e) {
     console.log(e, 'err')
     cache[prefix] = {};

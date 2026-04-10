@@ -129,15 +129,21 @@
   }
 }
 
-/* ── Content ────────────────────────────────────────────── */
+/* ── Layout wrapper ─────────────────────────────────────── */
 
-.rlh-content {
+.rlh-layout {
   position: relative;
   z-index: 2;
   width: var(--grid-container-width);
   margin: 0 auto;
-  padding: var(--spacing-4xl) 0 var(--spacing-4xl);
+  padding: var(--spacing-4xl) 0;
   box-sizing: border-box;
+}
+
+/* ── Content ────────────────────────────────────────────── */
+
+.rlh-content {
+  min-width: 0;
 }
 
 /* ── Eyebrow ────────────────────────────────────────────── */
@@ -265,16 +271,80 @@
   }
 }
 
+/* ── Image gallery (desktop right panel) ────────────────── */
+
+.rlh-gallery {
+  display: none;
+}
+
+.rlh-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+/* Outgoing: stays visible until incoming transition completes */
+.rlh-slide--prev,
+.rlh-slide--active {
+  opacity: 1;
+}
+
+.rlh-slide picture,
+.rlh-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: var(--radius-l);
+}
+
 /* ── Responsive ─────────────────────────────────────────── */
 
 @media (width >= 900px) {
   .recipe-listing-hero {
     min-height: 620px;
   }
+
+  .has-gallery .rlh-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xxl);
+    align-items: center;
+  }
+
+  .rlh-gallery {
+    display: block;
+    position: relative;
+    height: 460px;
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    background: var(--color-ink-800);
+    box-shadow:
+      0 0 0 1px rgb(200 144 40 / 15%),
+      0 24px 64px rgb(0 0 0 / 60%);
+  }
+
+  /* vignette overlay so images blend into dark bg */
+  .rlh-gallery::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-l);
+    background:
+      linear-gradient(to right, rgb(12 9 5 / 30%) 0%, transparent 25%),
+      linear-gradient(to top, rgb(12 9 5 / 40%) 0%, transparent 30%);
+    pointer-events: none;
+    z-index: 1;
+  }
 }
 
 @media (width >= 1440px) {
-  .rlh-content {
+  .rlh-layout {
     width: 1200px;
+  }
+
+  .rlh-gallery {
+    height: 520px;
   }
 }

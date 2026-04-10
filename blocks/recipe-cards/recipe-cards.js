@@ -22,6 +22,7 @@
  */
 
 import { createPicture } from '../../scripts/utils/picture.js';
+import { i18n } from '../../scripts/utils/placeholders.js';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -38,7 +39,7 @@ function universeSlug(universe) {
 
 // ── Card builder ──────────────────────────────────────────────────────────────
 
-function buildCard(recipe) {
+async function buildCard(recipe) {
   const card = document.createElement('a');
   card.className = 'recipe-card';
   card.href = recipe.href;
@@ -59,7 +60,7 @@ function buildCard(recipe) {
   if (recipe.universe) {
     const badge = document.createElement('span');
     badge.className = `recipe-card-badge recipe-card-badge-${universeSlug(recipe.universe)}`;
-    badge.textContent = recipe.universe;
+    badge.textContent = await i18n(`facet-name.universe.${recipe.universe}`);
     imgWrap.append(badge);
   }
 
@@ -84,16 +85,22 @@ function buildCard(recipe) {
   if (recipe.category) {
     const catPill = document.createElement('span');
     catPill.className = 'recipe-card-category';
-    catPill.textContent = recipe.category;
+    catPill.textContent = await i18n(`facet-name.category.${recipe.category}`);
     meta.append(catPill);
   }
 
-  if (recipe.meta) {
+  if (recipe.servings) {
     const metaSpan = document.createElement('span');
     metaSpan.className = 'recipe-card-servings';
-    metaSpan.textContent = recipe.meta;
+    metaSpan.textContent = await i18n(`recipe-search.servings-count`) + recipe.servings;
+    if (recipe.difficulty) {
+      metaSpan.textContent += ' · ' + await i18n(`facet-name.difficalty.${recipe.difficulty}`)
+    }
     meta.append(metaSpan);
+
   }
+
+  if (recipe.difficulty)
 
   body.append(meta);
   card.append(imgWrap, body);
@@ -130,8 +137,6 @@ function parseRecipe(row) {
 // ── Map query-index record to recipe shape ────────────────────────────────────
 
 function mapRecord(item) {
-  const servings = item.servings ? `${item.servings} servings` : '';
-  const meta = [servings, item.difficulty].filter(Boolean).join(' · ');
   return {
     picture: null,
     image: item.image ?? '',
@@ -139,7 +144,8 @@ function mapRecord(item) {
     title: item.title ?? '',
     description: item.description ?? '',
     category: item.category ?? '',
-    meta,
+    servings: item.servings,
+    difficulty: item.difficulty,
     universe: item.world ?? '',
     template: item.template
   };
@@ -169,10 +175,10 @@ function shuffle(arr) {
 
 // ── Grid + empty state ────────────────────────────────────────────────────────
 
-function buildGrid(recipes) {
+async function buildGrid(recipes) {
   const grid = document.createElement('div');
   grid.className = 'recipe-cards-grid';
-  recipes.forEach((r) => grid.append(buildCard(r)));
+  recipes.forEach(async (r) => grid.append(await buildCard(r)));
   return grid;
 }
 
@@ -188,7 +194,7 @@ export default async function decorate(block) {
       .map(parseRecipe)
       .filter(Boolean);
     if (!recipes.length) return;
-    block.replaceChildren(buildGrid(recipes));
+    block.replaceChildren(await buildGrid(recipes, dictionary));
     return;
   }
 
@@ -224,7 +230,7 @@ export default async function decorate(block) {
     if (isRandom) recipes = shuffle(recipes);
     if (limit > 0) recipes = recipes.slice(0, limit);
 
-    block.replaceChildren(buildGrid(recipes));
+    block.replaceChildren(await buildGrid(recipes));
     return;
   }
 
@@ -233,5 +239,5 @@ export default async function decorate(block) {
     .map(parseRecipe)
     .filter(Boolean);
   if (!recipes.length) return;
-  block.replaceChildren(buildGrid(recipes));
+  block.replaceChildren(await buildGrid(recipes));
 }
