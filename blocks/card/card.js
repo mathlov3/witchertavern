@@ -1,3 +1,5 @@
+import { restrictPicturesByGrid } from '../../scripts/utils/picture.js';
+
 export default function init(el) {
   const inner = el.querySelector(':scope > div');
   inner.classList.add('card-inner');
@@ -9,6 +11,7 @@ export default function init(el) {
     picDiv.append(pic);
     inner.insertAdjacentElement('afterbegin', picDiv);
     if (picPara && !picPara.hasChildNodes()) picPara.remove();
+    restrictPicturesByGrid(el);
   }
   // Decorate content
   const con = inner.querySelector(':scope > div:not([class])');

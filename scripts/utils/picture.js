@@ -1,5 +1,20 @@
 const DEF_BREAK = [{ media: '(min-width: 600px)', width: '2000' }, { width: '750' }];
 
+const GRID_WIDTHS = { 'grid-2': 800, 'grid-3': 600, 'grid-4': 400 };
+
+export function restrictPicturesByGrid(el) {
+  const section = el.closest('.section.container');
+  if (!section) return;
+  const gridClass = Object.keys(GRID_WIDTHS).find((cls) => section.classList.contains(cls));
+  if (!gridClass) return;
+  const width = GRID_WIDTHS[gridClass];
+  el.querySelectorAll('picture source, picture img[src]').forEach((node) => {
+    const attr = node.tagName === 'IMG' ? 'src' : 'srcset';
+    const val = node.getAttribute(attr);
+    if (val) node.setAttribute(attr, val.replace(/width=\d+/, `width=${width}`));
+  });
+}
+
 export function createPicture({ src, alt = '', eager = false, breakpoints = DEF_BREAK }) {
   const url = !src.startsWith('http') ? new URL(src, window.location.href) : new URL(src);
   const picture = document.createElement('picture');
