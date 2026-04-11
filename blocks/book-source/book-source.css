@@ -1,0 +1,136 @@
+.book-source {
+  margin-block: var(--spacing-xxl);
+}
+
+/* ── Card (default) ────────────────────────────────────── */
+
+.book-source-inner {
+  display: grid;
+  gap: var(--spacing-l);
+  padding: var(--spacing-xl);
+  background-color: var(--color-ink-800);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-parchment);
+
+  @media (width >= 600px) {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+  }
+}
+
+/* ── Cover image ───────────────────────────────────────── */
+
+.book-source-cover {
+  width: 96px;
+
+  picture {
+    display: block;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-s);
+    box-shadow: var(--shadow-card);
+  }
+
+  @media (width >= 900px) {
+    width: 120px;
+  }
+}
+
+/* ── Text body ─────────────────────────────────────────── */
+
+.book-source-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.book-source-label {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: var(--body-font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-s);
+}
+
+/* Title — authored as h2 */
+
+.book-source-body h1,
+.book-source-body h2,
+.book-source-body h3,
+.book-source-body h4,
+.book-source-body h5,
+.book-source-body h6 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--heading-font-size-s);
+  font-weight: 700;
+  color: var(--color-text-accent);
+  line-height: var(--heading-line-height);
+}
+
+/* Author — italic paragraph */
+
+.book-source-body p {
+  margin: 0;
+  font-size: var(--body-font-size-s);
+  color: var(--color-text-secondary);
+
+  em {
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+}
+
+/* ── Compact variant ───────────────────────────────────── */
+
+.book-source.compact {
+  margin-block: var(--spacing-xl);
+
+  .book-source-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--spacing-s) var(--spacing-m);
+    padding: var(--spacing-m) var(--spacing-l);
+    background: transparent;
+    border: none;
+    border-left: 2px solid var(--color-border-accent);
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .book-source-label {
+    margin-bottom: 0;
+  }
+
+  .book-source-body {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--spacing-s);
+  }
+
+  .book-source-body h1,
+  .book-source-body h2,
+  .book-source-body h3,
+  .book-source-body h4,
+  .book-source-body h5,
+  .book-source-body h6 {
+    font-size: var(--body-font-size-m);
+    font-weight: 600;
+  }
+
+  .book-source-body p {
+    font-size: var(--body-font-size-s);
+  }
+}
