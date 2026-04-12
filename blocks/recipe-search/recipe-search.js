@@ -35,6 +35,7 @@ import { createPicture } from '../../scripts/utils/picture.js';
 import {
   getSearchQuery,
   SEARCH_QUERY_EVENT,
+  resolveAlgoliaConfig,
   createAlgoliaSearchProvider,
   createQueryIndexSearchProvider,
 } from '../../scripts/utils/search.js';
@@ -389,19 +390,10 @@ export default async function decorate(block) {
   loadStyle('/blocks/recipe-cards/recipe-cards.css');
 
   // ── Provider selection ─────────────────────────────────────
-  const source = getMetadata('search-source') || 'algolia';
-  let provider;
-
-  if (source === 'query-index') {
-    const indexUrl = getMetadata('query-index-url') || '/recipes/query-index.json';
-    provider = createQueryIndexSearchProvider(indexUrl);
-  } else {
-    provider = createAlgoliaSearchProvider({
-      appId: getMetadata('algolia-app-id') || 'Q2XOYHGPQV',
-      searchKey: getMetadata('algolia-search-key') ?? '',
-      indexName: getMetadata(`algolia-index-${env}`) || 'witchertavern_recipes_dev',
-    });
-  }
+  const { source, appId, searchKey, indexName, indexUrl } = resolveAlgoliaConfig(getMetadata, env);
+  const provider = source === 'algolia' && appId && searchKey && indexName
+    ? createAlgoliaSearchProvider({ appId, searchKey, indexName })
+    : createQueryIndexSearchProvider(indexUrl);
 
   block.replaceChildren();
 

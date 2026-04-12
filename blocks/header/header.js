@@ -5,6 +5,7 @@ import { i18n } from '../../scripts/utils/placeholders.js';
 import {
   getSearchQuery,
   navigateToSearch,
+  resolveAlgoliaConfig,
   createAlgoliaSuggestProvider,
   createQueryIndexSuggestProvider,
 } from '../../scripts/utils/search.js';
@@ -399,16 +400,10 @@ export default async function init(el) {
     const [fragment] = await Promise.all([
       loadFragment(`${locale.prefix}${path}`)
     ]);
-    const searchKey = getMetadata('algolia-search-key');
-    const searchProvider = searchKey
-      ? createAlgoliaSuggestProvider(
-          getMetadata('algolia-app-id') || 'Q2XOYHGPQV',
-          searchKey,
-          getMetadata(`algolia-index-${env}`) || 'witchertavern_recipes_dev',
-        )
-      : createQueryIndexSuggestProvider(
-          getMetadata('query-index-url') || '/recipes/query-index.json',
-        );
+    const { source, appId, searchKey, indexName, indexUrl } = resolveAlgoliaConfig(getMetadata, env);
+    const searchProvider = source === 'algolia' && appId && searchKey && indexName
+      ? createAlgoliaSuggestProvider(appId, searchKey, indexName)
+      : createQueryIndexSuggestProvider(indexUrl);
     fragment.classList.add('header-content');
     await decorateHeader(fragment, searchProvider);
     el.append(fragment);
