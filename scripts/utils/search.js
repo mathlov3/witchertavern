@@ -46,6 +46,26 @@ export function navigateToSearch(baseUrl, query) {
   window.location.assign(buildSearchUrl(baseUrl, query));
 }
 
+// ── Config resolution ─────────────────────────────────────────────────────────
+
+/**
+ * Resolves Algolia / query-index config from page metadata + current env.
+ * Centralises all metadata key names so blocks don't duplicate them.
+ *
+ * @param {(key: string) => string} getMetadata
+ * @param {string} env — 'prod' | 'stage' | 'dev'
+ * @returns {{ source: string, appId: string, searchKey: string, indexName: string, indexUrl: string }}
+ */
+export function resolveAlgoliaConfig(getMetadata, env) {
+  return {
+    source: getMetadata(`search-source-${env}`) || 'query-index',
+    appId: getMetadata('algolia-app-id') || '',
+    searchKey: getMetadata(`algolia-search-key-${env}`) || getMetadata('algolia-search-key') || '',
+    indexName: getMetadata(`algolia-index-${env}`) || '',
+    indexUrl: getMetadata('query-index-url') || '/recipes/query-index.json',
+  };
+}
+
 // ── Suggestion providers (header autocomplete) ────────────────────────────────
 
 /**
