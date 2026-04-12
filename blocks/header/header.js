@@ -8,6 +8,7 @@ import {
   createAlgoliaSuggestProvider,
   createQueryIndexSuggestProvider,
 } from '../../scripts/utils/search.js';
+import env from '../../scripts/utils/env.js';
 
 const { locale } = getConfig();
 
@@ -403,7 +404,7 @@ export default async function init(el) {
       ? createAlgoliaSuggestProvider(
           getMetadata('algolia-app-id') || 'Q2XOYHGPQV',
           searchKey,
-          getMetadata('algolia-index') || 'witchertavern_recipes_dev',
+          getMetadata(`algolia-index-${env}`) || 'witchertavern_recipes_dev',
         )
       : createQueryIndexSuggestProvider(
           getMetadata('query-index-url') || '/recipes/query-index.json',
