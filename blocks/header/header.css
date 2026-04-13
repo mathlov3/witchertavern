@@ -177,12 +177,17 @@ header {
 
     .hs-suggestions {
       list-style: none;
-      margin: var(--spacing-xs) 0 0;
+      margin: 0;
       padding: 0;
       background: var(--color-ink-700);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-m);
       overflow: hidden;
+      position: fixed;
+      left: var(--grid-gutter-width);
+      right: var(--grid-gutter-width);
+      top: calc(var(--header-height) + 64px); /* header + search bar height */
+      z-index: 1001;
     }
 
     .hs-suggestion {
@@ -218,9 +223,6 @@ header {
       font-size: var(--body-font-size-m);
       font-weight: 600;
       color: var(--color-text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .hs-suggestion-category {
@@ -405,13 +407,14 @@ header {
   }
 
   &.is-mobile-open {
-    height: initial;
-    max-height: initial;
-    overflow: initial;
+    height: 100dvh;
+    max-height: none;
+    overflow: hidden;
     bottom: 0;
 
     .header-content {
       height: 100%;
+      grid-template-rows: var(--header-height) 1fr;
     }
 
     background-color: var(--color-ink-900);
@@ -422,6 +425,10 @@ header {
 
     .actions-section {
       border-bottom: 1px solid var(--color-border);
+    }
+
+    .main-nav-section {
+      overflow-y: auto;
     }
   }
 }

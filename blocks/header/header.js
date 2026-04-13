@@ -1,7 +1,7 @@
 import { getConfig, getMetadata } from '../../scripts/ak.js';
 import { loadFragment } from '../fragment/fragment.js';
 import { setColorScheme } from '../section-metadata/section-metadata.js';
-import { i18n } from '../../scripts/utils/placeholders.js';
+import getPlaceholders, { i18n } from '../../scripts/utils/placeholders.js';
 import {
   getSearchQuery,
   navigateToSearch,
@@ -16,6 +16,7 @@ const { locale } = getConfig();
 const HEADER_PATH = '/fragments/nav/header';
 const HEADER_ACTIONS = [
   '/tools/widgets/scheme',
+  '/tools/widgets/search',
   '/tools/widgets/language',
   '/tools/widgets/toggle',
 ];
@@ -122,11 +123,16 @@ async function decorateAction(header, pattern) {
   if (pattern === '/tools/widgets/language') decorateLanguage(btn);
   if (pattern === '/tools/widgets/scheme') decorateScheme(btn);
   if (pattern === '/tools/widgets/toggle') decorateNavToggle(btn);
+  if (pattern === '/tools/widgets/search') decorateSearch(btn);
 }
 
-async function decorateSearch(section, searchProvider) {
-  const defaultContent = section.querySelector(':scope > .default-content');
-  if (!defaultContent) return;
+async function decorateSearch(btn) {
+  const { source, appId, searchKey, indexName, indexUrl } = resolveAlgoliaConfig(getMetadata, env);
+    const searchProvider = source === 'algolia' && appId && searchKey && indexName
+      ? createAlgoliaSuggestProvider(appId, searchKey, indexName)
+      : createQueryIndexSuggestProvider(indexUrl);
+  const wrapper = btn.parentElement;
+  const placeholders = await getPlaceholders();
 
   const icon = () => {
     const span = document.createElement('span');
@@ -134,12 +140,9 @@ async function decorateSearch(section, searchProvider) {
     return span.firstElementChild;
   };
 
-  // Mobile toggle button
-  const toggleBtn = document.createElement('button');
-  toggleBtn.className = 'search-toggle';
-  toggleBtn.setAttribute('aria-label', 'Search');
-  toggleBtn.setAttribute('aria-expanded', 'false');
-  toggleBtn.append(icon());
+  btn.classList.add('search-toggle');
+  btn.setAttribute('aria-label', 'Search');
+  btn.setAttribute('aria-expanded', 'false');
 
   // Form
   const inputPlaceholder = await i18n('search-input-field.placeholder-text', 'Search recipes…');
@@ -174,17 +177,7 @@ async function decorateSearch(section, searchProvider) {
   panel.className = 'header-search';
   panel.append(form, suggestionsList);
 
-  // Wrapper
-  const wrapper = document.createElement('div');
-  wrapper.className = 'action-wrapper search';
-  wrapper.append(toggleBtn, panel);
-
-  const langWrapper = defaultContent.querySelector('.action-wrapper.language');
-  if (langWrapper) {
-    defaultContent.insertBefore(wrapper, langWrapper);
-  } else {
-    defaultContent.prepend(wrapper);
-  }
+  wrapper.append(panel);
 
   // ── Suggestions state ──────────────────────────────────────────────────────
 
@@ -229,7 +222,7 @@ async function decorateSearch(section, searchProvider) {
       if (item.category) {
         const cat = document.createElement('span');
         cat.className = 'hs-suggestion-category';
-        cat.textContent = item.category;
+        cat.textContent = placeholders[`facet-name.category.${item.category}`] || item.category;
         info.append(cat);
       }
 
@@ -304,12 +297,12 @@ async function decorateSearch(section, searchProvider) {
     navigateToSearch('/search', val);
   });
 
-  // ── Mobile toggle ──────────────────────────────────────────────────────────
+  // ── Toggle ─────────────────────────────────────────────────────────────────
 
-  toggleBtn.addEventListener('click', () => {
+  btn.addEventListener('click', () => {
     toggleMenu(wrapper);
     const isOpen = wrapper.classList.contains('is-open');
-    toggleBtn.setAttribute('aria-expanded', String(isOpen));
+    btn.setAttribute('aria-expanded', String(isOpen));
     if (isOpen) input.focus();
   });
 
@@ -376,7 +369,7 @@ async function decorateActionSection(section) {
   section.classList.add('actions-section');
 }
 
-async function decorateHeader(fragment, searchProvider) {
+async function decorateHeader(fragment) {
   const sections = fragment.querySelectorAll(':scope > .section');
   if (sections[0]) decorateBrandSection(sections[0]);
   if (sections[1]) decorateNavSection(sections[1]);
@@ -385,8 +378,6 @@ async function decorateHeader(fragment, searchProvider) {
   for (const pattern of HEADER_ACTIONS) {
     decorateAction(fragment, pattern);
   }
-
-  if (sections[2]) decorateSearch(sections[2], searchProvider);
 }
 
 /**
@@ -400,12 +391,8 @@ export default async function init(el) {
     const [fragment] = await Promise.all([
       loadFragment(`${locale.prefix}${path}`)
     ]);
-    const { source, appId, searchKey, indexName, indexUrl } = resolveAlgoliaConfig(getMetadata, env);
-    const searchProvider = source === 'algolia' && appId && searchKey && indexName
-      ? createAlgoliaSuggestProvider(appId, searchKey, indexName)
-      : createQueryIndexSuggestProvider(indexUrl);
     fragment.classList.add('header-content');
-    await decorateHeader(fragment, searchProvider);
+    await decorateHeader(fragment);
     el.append(fragment);
   } catch (e) {
     throw Error(e);

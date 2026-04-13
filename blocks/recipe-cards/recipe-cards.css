@@ -4,7 +4,7 @@
 
 .recipe-cards {
   max-width: var(--grid-container-width);
-  margin: 0 auto var(--spacing-4xl);
+  margin: 0 auto var(--spacing-xl);
   padding: 0;
 }
 

@@ -60,7 +60,7 @@ async function buildCard(recipe) {
   if (recipe.universe) {
     const badge = document.createElement('span');
     badge.className = `recipe-card-badge recipe-card-badge-${universeSlug(recipe.universe)}`;
-    badge.textContent = await i18n(`facet-name.universe.${recipe.universe}`);
+    badge.textContent = await i18n(`facet-name.universe.${recipe.universe}`, recipe.universe);
     imgWrap.append(badge);
   }
 
@@ -147,7 +147,8 @@ function mapRecord(item) {
     servings: item.servings,
     difficulty: item.difficulty,
     universe: item.world ?? '',
-    template: item.template
+    template: item.template,
+    lastModified: item.lastModified ? Number(item.lastModified) : 0,
   };
 }
 
@@ -202,11 +203,12 @@ export default async function decorate(block) {
   if (isQueryIndex) {
     const rows = [...block.querySelectorAll(':scope > div > div')];
     const url = rows[0]?.textContent?.trim() || '/query-index.json';
-    const limit = parseInt(rows[1]?.textContent?.trim(), 10) || 0;
-    const worldFilter = rows[2]?.textContent?.trim().toLowerCase() || '';
-    const categoryFilter = [...block.classList]
-      .find((c) => c.startsWith('category-'))
-      ?.slice('category-'.length) || '';
+    const classList = [...block.classList];
+    const worldClass = classList.find((c) => c.startsWith('world-'))?.slice('world-'.length) || '';
+    const maxResultsClass = classList.find((c) => c.startsWith('max-results-'))?.slice('max-results-'.length) || '';
+    const limit = parseInt(maxResultsClass, 10) || parseInt(rows[1]?.textContent?.trim(), 10) || 0;
+    const worldFilter = worldClass || rows[2]?.textContent?.trim().toLowerCase() || '';
+    const categoryFilter = classList.find((c) => c.startsWith('category-'))?.slice('category-'.length) || '';
     const isRandom = block.classList.contains('random');
     block.replaceChildren();
 
@@ -227,7 +229,11 @@ export default async function decorate(block) {
     if (categoryFilter) {
       recipes = recipes.filter((r) => r.category.toLowerCase().replace(/\s+/g, '-') === categoryFilter);
     }
-    if (isRandom) recipes = shuffle(recipes);
+    if (isRandom) {
+      recipes = shuffle(recipes);
+    } else {
+      recipes = recipes.sort((a, b) => b.lastModified - a.lastModified);
+    }
     if (limit > 0) recipes = recipes.slice(0, limit);
 
     block.replaceChildren(await buildGrid(recipes));
