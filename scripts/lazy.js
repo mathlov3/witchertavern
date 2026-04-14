@@ -1,4 +1,15 @@
 import ENV from './utils/env.js';
+import { getConfig, loadStyle } from './ak.js';
+
+const CONSENT_KEY = 'cookie-consent';
+
+async function loadCookieConsent() {
+  if (localStorage.getItem(CONSENT_KEY)) return;
+  const { codeBase } = getConfig();
+  await loadStyle(`${codeBase}/blocks/cookie-consent/cookie-consent.css`);
+  const { renderBanner } = await import('../blocks/cookie-consent/cookie-consent.js');
+  renderBanner();
+}
 
 async function loadSidekick() {
   const getSk = () => document.querySelector('aem-sidekick');
@@ -13,6 +24,7 @@ async function loadSidekick() {
   import('./utils/lazyhash.js');
   import('./utils/favicon.js');
   import('./utils/footer.js').then(({ default: footer }) => footer());
+  loadCookieConsent();
 
   // Author facing tools
   if (ENV !== 'prod') {
