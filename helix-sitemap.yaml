@@ -2,5 +2,5 @@
    example:
      origin: https://witchertavern.com
      source: /main/query-index.json
-     destination: /sitemap.xml
+     destination: /sitemap-uk.xml
      lastmod: YYYY-MM-DD
