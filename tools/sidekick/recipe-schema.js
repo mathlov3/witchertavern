@@ -64,7 +64,7 @@ function getDescription() {
   return el?.textContent.trim() || getMeta('description') || getMeta('og:description') || '';
 }
 
-const PROD_HOST = 'https://witchertavern.com';
+const PROD_HOST = 'https://witcherinn.com';
 
 function toProdUrl(url) {
   if (!url) return '';

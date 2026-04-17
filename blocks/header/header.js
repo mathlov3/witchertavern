@@ -368,7 +368,7 @@ function decorateNavItem(li) {
   const menu = decorateMegaMenu(li) || decorateMenu(li);
   if (!(menu || link)) return;
   link.addEventListener('click', (e) => {
-    if (menu) {
+    if (menu && window.innerWidth < 900) {
       e.preventDefault();
       toggleMenu(li);
     } else {
