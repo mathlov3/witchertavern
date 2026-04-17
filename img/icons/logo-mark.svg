@@ -55,7 +55,7 @@
   </g>
 
   <!-- ── Wordmark text ──────────────────────────────────── -->
-  <!-- "ТАВЕРНА" — small caps label -->
+  <!-- "КОРЧМА" — small caps label -->
   <text
     x="56" y="20"
     font-family="'Playfair Display', Georgia, serif"
@@ -63,7 +63,7 @@
     font-weight="600"
     letter-spacing="2"
     fill="#c4a070"
-    opacity="0.85">ТАВЕРНА</text>
+    opacity="0.85">КОРЧМА</text>
 
   <!-- "Відьмака" — large brand name -->
   <text

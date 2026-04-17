@@ -2,13 +2,14 @@ indices:
   sitemap:
     include:
       - /**
-      - /**/**
     exclude:
       - /fragments/**
       - /fragments/**/**
       - /docs/**
       - /docs/**/**
       - /search
+      - /en/**
+      - /pl/**
     target: /main/query-index.json
     properties:
       title:
@@ -33,9 +34,129 @@ indices:
           parseTimestamp(headers['last-modified'], 'ddd, DD MMM YYYY hh:mm:ss GMT')
   recipes:
     include:
-      - /recipes/**
-      - /recipes/**/**
+      - /recipes/appetizers/**
+      - /recipes/baking/**
+      - /recipes/desserts/**
+      - /recipes/drinks/**
+      - /recipes/maindishes/**
+      - /recipes/salads/**
+      - /recipes/sauces/**
+      - /recipes/sidedishes/**
+      - /recipes/soups/**
+      - /recipes/spices/**
     target: /recipes/query-index.json
+    filter:
+      template: recipe
+    properties:
+      title:
+        select: main h1:first-of-type
+        value: |
+          textContent(el)
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      world:
+        select: head > meta[name="world"]
+        value: |
+          attribute(el, "content")
+      difficulty:
+        select: head > meta[name="difficulty"]
+        value: |
+          attribute(el, "content")
+      cook-time:
+        select: head > meta[name="cook-time"]
+        value: |
+          attribute(el, "content")
+      servings:
+        select: head > meta[name="servings"]
+        value: |
+          attribute(el, "content")
+      template:
+        select: head > meta[name="template"]
+        value: |
+          attribute(el, "content")
+      lastModified:
+        select: none
+        value: |
+          parseTimestamp(headers['last-modified'], 'ddd, DD MMM YYYY hh:mm:ss GMT')
+  recipes-en:
+    include:
+      - /en/recipes/appetizers/**
+      - /en/recipes/baking/**
+      - /en/recipes/desserts/**
+      - /en/recipes/drinks/**
+      - /en/recipes/maindishes/**
+      - /en/recipes/salads/**
+      - /en/recipes/sauces/**
+      - /en/recipes/sidedishes/**
+      - /en/recipes/soups/**
+      - /en/recipes/spices/**
+    target: /en/recipes/query-index.json
+    filter:
+      template: recipe
+    properties:
+      title:
+        select: main h1:first-of-type
+        value: |
+          textContent(el)
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      world:
+        select: head > meta[name="world"]
+        value: |
+          attribute(el, "content")
+      difficulty:
+        select: head > meta[name="difficulty"]
+        value: |
+          attribute(el, "content")
+      cook-time:
+        select: head > meta[name="cook-time"]
+        value: |
+          attribute(el, "content")
+      servings:
+        select: head > meta[name="servings"]
+        value: |
+          attribute(el, "content")
+      template:
+        select: head > meta[name="template"]
+        value: |
+          attribute(el, "content")
+      lastModified:
+        select: none
+        value: |
+          parseTimestamp(headers['last-modified'], 'ddd, DD MMM YYYY hh:mm:ss GMT')
+  recipes-pl:
+    include:
+      - /pl/recipes/appetizers/**
+      - /pl/recipes/baking/**
+      - /pl/recipes/desserts/**
+      - /pl/recipes/drinks/**
+      - /pl/recipes/maindishes/**
+      - /pl/recipes/salads/**
+      - /pl/recipes/sauces/**
+      - /pl/recipes/sidedishes/**
+      - /pl/recipes/soups/**
+      - /pl/recipes/spices/**
+    target: /pl/recipes/query-index.json
     filter:
       template: recipe
     properties:
