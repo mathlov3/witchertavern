@@ -41,7 +41,7 @@ function extractMeta(html) {
   return { title, description };
 }
 
-function buildCollectionSchema(pathname, meta, recipes, prodHostname) {
+function buildCollectionSchema(pathname, meta, recipes, prodHostname, env) {
   const base = `https://${prodHostname}`;
 
   const itemListElement = recipes.map((r, i) => ({
@@ -88,7 +88,7 @@ export async function injectCollectionSchema(resp, parsed, pathname, env) {
   if (!recipes.length) return new Response(html, resp);
 
   const meta = extractMeta(html);
-  const schema = buildCollectionSchema(pathname, meta, recipes, prodHostname);
+  const schema = buildCollectionSchema(pathname, meta, recipes, prodHostname, env);
 
   const modified = injectSchema(html, schema);
 
