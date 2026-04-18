@@ -1,4 +1,5 @@
 import { getConfig, getMetadata, loadStyle } from '../ak.js';
+import { i18n } from './placeholders.js';
 
 const DEFAULT_INDEX = '/main/query-index.json';
 
@@ -85,16 +86,16 @@ export default async function loadBreadcrumbs() {
 
   if (segments.length < 2) return;
 
-  const crumbs = [];
+  const homePath = prefix || '/';
+  const homeName = await i18n('crumb-home-page-name', 'Корчма Відьмака');
+  const crumbs = [{ path: homePath, name: homeName, isLast: false }];
 
   let accPath = prefix;
   for (const [i, seg] of segments.entries()) {
     accPath += `/${seg}`;
-    const isLast = i === segments.length - 1;
-    const name = (isLast ? getMetadata('og:title') : null)
-      || index.get(accPath)
-      || formatSlug(seg);
-    crumbs.push({ path: accPath, name, isLast });
+    if (i === segments.length - 1) break;
+    const name = index.get(accPath) || formatSlug(seg);
+    crumbs.push({ path: accPath, name, isLast: false });
   }
 
   injectJsonLd(crumbs);
