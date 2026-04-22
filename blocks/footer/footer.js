@@ -1,5 +1,19 @@
-import { getConfig, getMetadata } from '../../scripts/ak.js';
+import { getConfig, getMetadata, loadStyle } from '../../scripts/ak.js';
 import { loadFragment } from '../fragment/fragment.js';
+
+async function initCookieConsentTriggers(container) {
+  const links = container.querySelectorAll('a[href="#cookie-settings"]');
+  if (!links.length) return;
+  await loadStyle('/blocks/cookie-consent/cookie-consent.css');
+  const { renderBanner } = await import('/blocks/cookie-consent/cookie-consent.js');
+  links.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('cookie-consent');
+      renderBanner();
+    });
+  });
+}
 
 const FOOTER_PATH = '/fragments/nav/footer';
 
@@ -65,6 +79,7 @@ export default async function init(el) {
     });
 
     el.append(fragment);
+    await initCookieConsentTriggers(el);
   } catch (e) {
     throw Error(e);
   }

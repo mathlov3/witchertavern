@@ -95,11 +95,13 @@ export async function renderBanner() {
 export default async function init(el) {
   // Block element is used as a re-open trigger (e.g. placed in footer)
   el.innerHTML = '';
-  const link = document.createElement('button');
+  const link = document.createElement('a');
   link.className = 'cookie-consent-reopen';
+  link.href = '#cookie-settings';
   const label = await i18n('cookie-banner-reopen', 'Налаштування cookie');
   link.textContent = label;
-  link.addEventListener('click', () => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
     localStorage.removeItem(STORAGE_KEY);
     renderBanner();
   });
