@@ -24,6 +24,12 @@ export default function decorate(block) {
   const list = document.createElement('ol');
   list.className = 'recipe-steps-list';
 
+  const startClass = [...block.classList].find((c) => c.startsWith('step-start-'));
+  if (startClass) {
+    const startNum = parseInt(startClass.replace('step-start-', ''), 10);
+    if (startNum > 1) list.style.counterReset = `step ${startNum - 1}`;
+  }
+
   rows.forEach((row) => {
     const cells = [...row.children];
     const step = document.createElement('li');

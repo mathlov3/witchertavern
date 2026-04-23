@@ -86,6 +86,25 @@ function getImage() {
   return toProdUrl(img?.src || '');
 }
 
+function getVideo() {
+  const iframe = document.querySelector('.video iframe.youtube');
+  const src = iframe?.src
+    || iframe?.getAttribute('src')
+    || document.querySelector('.video[data-src]')?.dataset.src
+    || '';
+  const match = src.match(/embed\/([\w-]+)/);
+  if (!match) return undefined;
+  const videoId = match[1];
+  return {
+    '@type': 'VideoObject',
+    name: getRecipeName(),
+    description: getDescription(),
+    thumbnailUrl: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+    embedUrl: `https://www.youtube.com/embed/${videoId}`,
+    url: `https://www.youtube.com/watch?v=${videoId}`,
+  };
+}
+
 function getIngredients() {
   return [...document.querySelectorAll('.ingredient-text')]
     .map((el) => el.textContent.trim())
@@ -116,6 +135,7 @@ function buildSchema() {
   const datePublished = getMeta('publication-date');
   const ingredients = getIngredients();
   const instructions = getInstructions();
+  const video = getVideo();
 
   const schema = {
     '@context': 'https://schema.org',
@@ -123,13 +143,14 @@ function buildSchema() {
     ...(name && { name }),
     ...(description && { description }),
     ...(image && { image: [image] }),
-    author: { '@type': 'Organization', name: 'Witcher Inn' },
+    author: { '@type': 'Organization', name: 'Корчма Відьмака' },
     ...(datePublished && { datePublished }),
     ...(cookTime && { cookTime }),
     ...(recipeYield && { recipeYield }),
     ...(keywords && { keywords }),
     ...(ingredients.length && { recipeIngredient: ingredients }),
     ...(instructions.length && { recipeInstructions: instructions }),
+    ...(video && { video }),
   };
 
   return JSON.stringify(schema, null, 2);

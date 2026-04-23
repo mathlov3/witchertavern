@@ -10,7 +10,8 @@ const locales = {
 
 const linkBlocks = [
   { fragment: '/fragments/' },
-  { schedule: '/schedules/' }
+  { schedule: '/schedules/' },
+  { youtube: 'https://www.youtube' },
 ];
 
 // Blocks with self-managed styles

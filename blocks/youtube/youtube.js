@@ -11,6 +11,7 @@ function decorate(el) {
 export default function init(a) {
   const div = document.createElement('div');
   div.className = 'video';
+  if (a.hash === '#_small') div.classList.add('small');
   const params = new URLSearchParams(a.search);
   const id = params.get('v') || a.pathname.split('/').pop();
   params.append('rel', '0');
