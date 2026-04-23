@@ -241,17 +241,19 @@ export function createQueryIndexSearchProvider(url) {
       const res = await fetch(url);
       if (!res.ok) throw new Error(`query-index fetch error: ${res.status}`);
       const json = await res.json();
-      allHits = (json.data ?? []).map((row) => ({
-        path: row.path,
-        title: row.title,
-        description: row.description,
-        category: row.category,
-        image: row.image,
-        difficulty: row.difficulty,
-        'cook-time': row['cook-time'] ?? row.cookTime,
-        servings: row.servings,
-        world: row.world,
-      }));
+      allHits = (json.data ?? [])
+        .filter((row) => row.template === 'recipe')
+        .map((row) => ({
+          path: row.path,
+          title: row.title,
+          description: row.description,
+          category: row.category,
+          image: row.image,
+          difficulty: row.difficulty,
+          'cook-time': row['cook-time'] ?? row.cookTime,
+          servings: row.servings,
+          world: row.world,
+        }));
       return { hits: allHits, facetValues: deriveValues(allHits) };
     },
     async query(query, filterState) {

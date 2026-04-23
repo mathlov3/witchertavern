@@ -24,6 +24,10 @@
  *
  * Rows 2 and 3 are auto-detected by content type.
  * If no image row is present the layout is unchanged.
+ *
+ * Variant — add "(small)" to the block name in the doc:
+ *   Compact centered banner (~200 px tall). Only eyebrow + title
+ *   are shown; subtitle, stats, and gallery are hidden.
  */
 
 function buildEmbers(container) {
