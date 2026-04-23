@@ -143,7 +143,7 @@ function buildSchema() {
     ...(name && { name }),
     ...(description && { description }),
     ...(image && { image: [image] }),
-    author: { '@id': 'https://witchertavern.com/#organization' },
+    author: { '@id': 'https://witcherinn.com/#organization' },
     ...(datePublished && { datePublished }),
     ...(cookTime && { cookTime }),
     ...(recipeYield && { recipeYield }),
