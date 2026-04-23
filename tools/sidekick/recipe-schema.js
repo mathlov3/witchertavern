@@ -143,7 +143,7 @@ function buildSchema() {
     ...(name && { name }),
     ...(description && { description }),
     ...(image && { image: [image] }),
-    author: { '@type': 'Organization', name: 'Корчма Відьмака' },
+    author: { '@id': 'https://witchertavern.com/#organization' },
     ...(datePublished && { datePublished }),
     ...(cookTime && { cookTime }),
     ...(recipeYield && { recipeYield }),
