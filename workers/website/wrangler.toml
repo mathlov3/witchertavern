@@ -6,6 +6,11 @@ keep_vars = true
 vars = { AEM_ORG = "plumjohan", AEM_SITE = "witchertavern", ALGOLIA_APP_ID = "Q2XOYHGPQV", ALGOLIA_INDEX_NAME = "witchertavern_recipes_dev", PROD_HOSTNAME = "witcherinn.com" }
 # INDEXING_SECRET and ALGOLIA_ADMIN_KEY must be set as encrypted secrets: wrangler secret put INDEXING_SECRET
 
+routes = [
+  { pattern = "witcherinn.com", custom_domain = true },
+  { pattern = "www.witcherinn.com", custom_domain = true }
+]
+
 [env.dev]
 vars = { AEM_ORG = "plumjohan", AEM_SITE = "witchertavern", ALGOLIA_APP_ID = "Q2XOYHGPQV", ALGOLIA_INDEX_NAME = "witchertavern_recipes_dev", PROD_HOSTNAME = "witcherinn.com" }
 
