@@ -8,7 +8,6 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  counter-reset: step;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-m);
@@ -21,7 +20,6 @@
 /* ── Individual step ───────────────────────────────────── */
 
 .recipe-step {
-  counter-increment: step;
   display: grid;
   gap: var(--spacing-l);
   align-items: start;
@@ -89,9 +87,8 @@
       padding-left: calc(var(--spacing-xxl) + var(--spacing-m));
   }
 
-  /* Large decorative step number */
-  &::before {
-    content: counter(step);
+  /* Large decorative step number — clickable anchor */
+  .step-number {
     position: absolute;
     left: 0;
     top: calc(-1 * var(--spacing-3xl));
@@ -101,8 +98,13 @@
     line-height: 1;
     color: var(--color-accent);
     opacity: 0.25;
-    pointer-events: none;
+    text-decoration: none;
     user-select: none;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.5;
+    }
 
     @media (width >= 900px) {
       top: -4px;

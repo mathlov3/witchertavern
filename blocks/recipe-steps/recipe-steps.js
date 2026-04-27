@@ -25,18 +25,25 @@ export default function decorate(block) {
   list.className = 'recipe-steps-list';
 
   const startClass = [...block.classList].find((c) => c.startsWith('step-start-'));
-  if (startClass) {
-    const startNum = parseInt(startClass.replace('step-start-', ''), 10);
-    if (startNum > 1) list.style.counterReset = `step ${startNum - 1}`;
-  }
+  const startNum = startClass ? parseInt(startClass.replace('step-start-', ''), 10) : 1;
 
-  rows.forEach((row) => {
+  rows.forEach((row, i) => {
+    const stepNum = startNum + i;
     const cells = [...row.children];
     const step = document.createElement('li');
     step.className = 'recipe-step';
+    step.id = `step-${stepNum}`;
 
     const content = document.createElement('div');
     content.className = 'step-content';
+
+    const numLink = document.createElement('a');
+    numLink.className = 'step-number';
+    numLink.href = `#step-${stepNum}`;
+    numLink.setAttribute('aria-label', `Step ${stepNum}`);
+    numLink.textContent = stepNum;
+    content.append(numLink);
+
     content.append(...(cells[0]?.childNodes ?? []));
     step.append(content);
 
