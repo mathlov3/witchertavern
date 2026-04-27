@@ -25,7 +25,7 @@
  *
  * Facet groups:
  *   Category, Difficulty, Universe  — provider facets (OR within, AND between)
- *   Cook Time                       — client-side bucket: <30 / 30–60 / 60+ min
+ *   Total Time (cook + prep)        — client-side bucket: <30 / 30–60 / 60+ min
  *
  * Mobile: sidebar becomes a slide-up bottom sheet triggered by a "Filters" button.
  */
@@ -111,11 +111,17 @@ function syncCheckboxes(sidebar, filterState) {
   });
 }
 
-// ── Cook-time client filter (shared by both providers) ────────────────────────
+// ── Total-time client filter (cook + prep, shared by both providers) ─────────
+
+function totalMinutes(h) {
+  const cook = parseInt(h['cook-time'], 10) || 0;
+  const prep = parseInt(h['prep-time'], 10) || 0;
+  return cook + prep;
+}
 
 function applyCookFilter(hits, set) {
   if (!set.size) return hits;
-  return hits.filter((h) => set.has(cookBucket(h['cook-time'])));
+  return hits.filter((h) => set.has(cookBucket(totalMinutes(h))));
 }
 
 
@@ -242,7 +248,7 @@ function buildSidebar(facetValues, filterState, onChange, placeholders = {}) {
       opts: facetValues.world.map((v) => ({ label: ph(placeholders, `facet-name.universe.${v}`, v), value: v })),
     },
     {
-      label: ph(placeholders, 'facet-name.cook-time', 'Cook Time'),
+      label: ph(placeholders, 'facet-name.total-time', 'Total Time'),
       key: 'cookTime',
       opts: COOK_BUCKETS.map(({ label, value, phKey }) => ({ label: ph(placeholders, `facet-name.cook-time.${phKey}`, label), value })),
     },

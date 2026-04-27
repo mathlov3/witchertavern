@@ -80,6 +80,10 @@ indices:
         select: head > meta[name="cook-time"]
         value: |
           attribute(el, "content")
+      prep-time:
+        select: head > meta[name="prep-time"]
+        value: |
+          attribute(el, "content")
       servings:
         select: head > meta[name="servings"]
         value: |
@@ -136,6 +140,10 @@ indices:
         select: head > meta[name="cook-time"]
         value: |
           attribute(el, "content")
+      prep-time:
+        select: head > meta[name="prep-time"]
+        value: |
+          attribute(el, "content")
       servings:
         select: head > meta[name="servings"]
         value: |
@@ -190,6 +198,10 @@ indices:
           attribute(el, "content")
       cook-time:
         select: head > meta[name="cook-time"]
+        value: |
+          attribute(el, "content")
+      prep-time:
+        select: head > meta[name="prep-time"]
         value: |
           attribute(el, "content")
       servings:

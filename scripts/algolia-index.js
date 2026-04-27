@@ -32,6 +32,7 @@ const META_FIELDS = [
   'world',
   'difficulty',
   'cook-time',
+  'prep-time',
   'servings',
   'template',
 ];

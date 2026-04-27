@@ -7,10 +7,11 @@
  *     Cell 1: description / quote from the book (text content)
  *     Cell 2: photo of the finished dish (<picture>)
  *
- * Stats (cook-time, servings, difficulty) come from page metadata so they
+ * Stats (prep-time, cook-time, servings, difficulty) come from page metadata so they
  * are indexed by Algolia without duplication:
  *
  *   | metadata    |           |
+ *   | prep-time   | 20 хвилин |
  *   | cook-time   | 45 хвилин |
  *   | servings    | 4 порції   |
  *   | difficulty  | easy       |  (easy | medium | hard)
@@ -28,6 +29,7 @@ const INTRO_BREAK = [
 ];
 
 const STATS = [
+  { key: 'prep-time', type: 'prep-time' },
   { key: 'cook-time', type: 'time' },
   { key: 'servings', type: 'servings' },
   { key: 'difficulty', type: 'difficulty' },
@@ -76,7 +78,8 @@ function buildStats(translations) {
   const bar = document.createElement('div');
   bar.className = 'recipe-stats';
 
-  STATS.forEach(({ type }, i) => {
+  STATS.forEach(({ key, type }, i) => {
+    if (!values[i] && key === 'prep-time') return;
     let stat;
     if (type === 'difficulty') {
       stat = buildDifficultyStat(values[i], translations);

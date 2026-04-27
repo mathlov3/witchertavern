@@ -9,6 +9,8 @@
  *   - description  → .recipe-description blockquote text
  *   - image        → og:image meta tag (falls back to .recipe-image img)
  *   - cookTime     → meta[name="cook-time"] → parsed to ISO 8601
+ *   - prepTime     → meta[name="prep-time"] → parsed to ISO 8601
+ *   - totalTime    → cook-time + prep-time combined → ISO 8601
  *   - recipeYield  → meta[name="servings"]
  *   - ingredients  → .ingredient-text items
  *   - instructions → .recipe-steps-list .step-content items
@@ -56,6 +58,19 @@ function parseCookTime(raw) {
   }
   if (!hours && !minutes) return undefined;
   return `PT${hours ? `${hours}H` : ''}${minutes ? `${minutes}M` : ''}`;
+}
+
+function addIsoDurations(...durations) {
+  const totalMins = durations.reduce((sum, iso) => {
+    if (!iso) return sum;
+    const h = iso.match(/(\d+)H/)?.[1] ?? 0;
+    const m = iso.match(/(\d+)M/)?.[1] ?? 0;
+    return sum + Number(h) * 60 + Number(m);
+  }, 0);
+  if (!totalMins) return undefined;
+  const h = Math.floor(totalMins / 60);
+  const m = totalMins % 60;
+  return `PT${h ? `${h}H` : ''}${m ? `${m}M` : ''}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -214,8 +229,9 @@ async function buildSchema() {
   const name = getRecipeName();
   const description = getDescription();
   const image = getImage();
-  const cookTimeRaw = getMeta('cook-time');
-  const cookTime = parseCookTime(cookTimeRaw);
+  const cookTime = parseCookTime(getMeta('cook-time'));
+  const prepTime = parseCookTime(getMeta('prep-time'));
+  const totalTime = addIsoDurations(cookTime, prepTime);
   const recipeYield = getMeta('servings');
   const keywords = getMeta('keywords');
   const datePublished = getMeta('publication-date');
@@ -238,7 +254,9 @@ async function buildSchema() {
     ...(image && { image: [image] }),
     author: { 'type': 'Organization', '@id': 'https://witcherinn.com/#organization' },
     ...(datePublished && { datePublished }),
+    ...(prepTime && { prepTime }),
     ...(cookTime && { cookTime }),
+    ...(totalTime && { totalTime }),
     ...(recipeYield && { recipeYield }),
     recipeCuisine: 'Medieval',
     ...(recipeCategory && { recipeCategory }),
