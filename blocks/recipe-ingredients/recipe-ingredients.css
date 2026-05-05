@@ -113,10 +113,19 @@
   text-decoration-color: var(--color-text-muted);
 }
 
+/* ── Actions row ─────────────────────────────────────────── */
+
+.ingredient-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-s);
+  margin-top: var(--spacing-m);
+}
+
 /* ── Reset button ────────────────────────────────────────── */
 
-.ingredient-reset {
-  margin-top: var(--spacing-m);
+.ingredient-reset,
+.ingredient-copy {
   padding: var(--spacing-s) var(--spacing-l);
   font-family: var(--font-heading);
   font-size: var(--body-font-size-s);
@@ -134,4 +143,10 @@
     background: var(--color-accent);
     border-color: var(--color-accent);
   }
+}
+
+.ingredient-copy.is-copied {
+  color: var(--color-ink-900);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
 }

@@ -128,11 +128,35 @@ export default async function decorate(block) {
     });
   });
 
+  /* ── Copy button ──────────────────────────────────────── */
+  const copyLabel = ph['ingredient-copy'] ?? 'Copy list';
+  const copiedLabel = ph['ingredient-copied'] ?? 'Copied!';
+
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'ingredient-copy';
+  copyBtn.textContent = copyLabel;
+  copyBtn.setAttribute('type', 'button');
+
+  copyBtn.addEventListener('click', async () => {
+    const text = items.map((item) => item.textContent.trim()).join('\n');
+    await navigator.clipboard.writeText(text);
+    copyBtn.textContent = copiedLabel;
+    copyBtn.classList.add('is-copied');
+    setTimeout(() => {
+      copyBtn.textContent = copyLabel;
+      copyBtn.classList.remove('is-copied');
+    }, 2000);
+  });
+
   /* ── Assemble ─────────────────────────────────────────── */
   const children = [];
 
   if (titleEl) children.push(titleEl);
 
-  children.push(list, resetBtn);
+  const actions = document.createElement('div');
+  actions.className = 'ingredient-actions';
+  actions.append(resetBtn, copyBtn);
+
+  children.push(list, actions);
   block.replaceChildren(...children);
 }
